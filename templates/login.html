@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>bulkorderpro.app — Login</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="login-container">
+    <div class="window">
+        <div class="title-bar">
+            <div class="dots">
+                <span></span><span></span><span></span>
+            </div>
+            <div class="url-pill">bulkorderpro.app</div>
+        </div>
+
+        <form class="login-box" method="POST" action="/login">
+            <div class="logo">
+                <svg viewBox="0 0 300 180" preserveAspectRatio="none">
+                    <line x1="0" y1="0" x2="300" y2="180" stroke="#c2691e" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="300" y1="0" x2="0" y2="180" stroke="#c2691e" stroke-width="1.5" opacity="0.6"/>
+                </svg>
+                <span>logo</span>
+            </div>
+
+            {% if error %}
+            <p style="color:#b00020; text-align:center; font-size:13px; margin-bottom:10px;">{{ error }}</p>
+            {% endif %}
+
+            <input type="text" name="username" placeholder="username" required>
+            <input type="password" name="password" placeholder="password" required>
+
+            <select name="role" required>
+                <option value="" disabled selected>role: manager / staff</option>
+                <option value="manager">manager</option>
+                <option value="staff">staff</option>
+            </select>
+
+            <button type="submit">LOGIN</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
