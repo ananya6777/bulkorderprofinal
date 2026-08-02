@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BulkOrder Pro Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+
+<body class="dashboard-page">
+
+    <div class="top-bar">
+
+        <div class="circles">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="web-address">
+            bulkorderpro.app
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-container">
+
+        <div class="sidebar">
+
+            <h2>
+                BulkOrder
+                <span>Pro</span>
+            </h2>
+
+            <a href="{{ url_for('dashboard') }}" class="active">
+                Dashboard
+            </a>
+
+            <a href="#">Orders</a>
+            <a href="#">Customers</a>
+            <a href="#">Stock</a>
+            <a href="#">Payments</a>
+            <a href="#">History</a>
+
+            <div class="bottom-links">
+                <a href="#">Settings</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+
+        </div>
+
+
+        <div class="main-content">
+
+            <div class="dashboard-header">
+
+                <h1>Dashboard Overview</h1>
+
+                <input
+                    type="text"
+                    placeholder="Search orders...">
+
+            </div>
+
+
+            <div class="cards">
+
+                <div class="card">
+                    <p>Total Orders</p>
+                    <h2>142</h2>
+                </div>
+
+                <div class="card pending-card">
+                    <p>Pending</p>
+                    <h2>28</h2>
+                </div>
+
+                <div class="card">
+                    <p>Low Stock</p>
+                    <h2>6</h2>
+                </div>
+
+                <div class="card">
+                    <p>Unpaid</p>
+                    <h2 class="green-number">15</h2>
+                </div>
+
+            </div>
+
+
+            <div class="warning">
+                ⚠ Diwali cut-off in 3 days — 28 orders pending confirmation
+            </div>
+
+
+            <div class="table-box">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Anika Sharma</td>
+                            <td>12 Dec</td>
+                            <td>24</td>
+                            <td>Paid</td>
+                            <td>
+                                <span class="confirmed">
+                                    Confirmed
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>James Patel</td>
+                            <td>13 Dec</td>
+                            <td>36</td>
+                            <td class="unpaid">Unpaid</td>
+                            <td>
+                                <span class="pending">
+                                    Pending
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Priya Singh</td>
+                            <td>14 Dec</td>
+                            <td>18</td>
+                            <td>Paid</td>
+                            <td>
+                                <span class="confirmed">
+                                    Confirmed
+                                </span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="dashboard-buttons">
+
+                <button class="new-order" type="button">
+                    + New Order
+                </button>
+
+                <button class="export" type="button">
+                    Export CSV
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

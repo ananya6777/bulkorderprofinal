@@ -1,0 +1,236 @@
+/* ---------- RESET ---------- */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+
+/* ---------- PAGE ---------- */
+
+body{
+
+    font-family:Georgia, serif;
+
+    background:#f6f0e6;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    height:100vh;
+
+}
+
+
+/* ---------- WINDOW ---------- */
+
+.window{
+
+    width:420px;
+
+    background:white;
+
+    border:3px solid #4a2613;
+    border-radius:8px;
+
+    overflow:hidden;
+
+}
+
+
+/* ---------- TOP BAR ---------- */
+
+.title-bar{
+
+    height:45px;
+
+    background:#c85605;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 15px;
+
+    position:relative;
+
+}
+
+.dots{
+
+    display:flex;
+    gap:8px;
+
+}
+
+.dots span{
+
+    width:12px;
+    height:12px;
+
+    border:2px solid #ffd966;
+    border-radius:50%;
+
+}
+
+.url-pill{
+
+    position:absolute;
+
+    left:50%;
+    transform:translateX(-50%);
+
+    width:180px;
+
+    text-align:center;
+
+    background:#d87821;
+
+    color:white;
+
+    padding:4px;
+
+    border:2px solid #efc070;
+    border-radius:4px;
+
+    font-size:13px;
+
+}
+
+
+/* ---------- LOGIN ---------- */
+
+.login-box{
+
+    padding:45px 40px;
+
+}
+
+
+/* ---------- TITLE ---------- */
+
+.brand-title{
+
+    text-align:center;
+
+    font-size:42px;
+
+    color:#1d6b3c;
+
+    margin-bottom:35px;
+
+}
+
+.brand-title::first-line{
+
+    color:#c85605;
+
+}
+
+
+/* ---------- INPUTS ---------- */
+
+.login-box input,
+.login-box select{
+
+    width:100%;
+
+    padding:15px;
+
+    margin-bottom:18px;
+
+    background:#fbf3e1;
+
+    border:2px solid #c85605;
+    border-radius:5px;
+
+    font-size:17px;
+
+    font-family:Georgia, serif;
+
+}
+
+.login-box input:focus,
+.login-box select:focus{
+
+    outline:none;
+
+    border-color:#1d6b3c;
+
+}
+
+
+/* ---------- BUTTON ---------- */
+
+.login-box button{
+
+    width:170px;
+
+    display:block;
+
+    margin:15px auto 0;
+
+    padding:13px;
+
+    background:#c85605;
+
+    color:#ffd76d;
+
+    border:2px solid #4a2613;
+
+    border-radius:6px;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.login-box button:hover{
+
+    background:#a54503;
+
+}
+
+
+/* ---------- ERROR ---------- */
+
+.error{
+
+    color:#b00020;
+
+    text-align:center;
+
+    margin-bottom:15px;
+
+}
+
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width:500px){
+
+.window{
+
+    width:95%;
+
+}
+
+.login-box{
+
+    padding:35px 25px;
+
+}
+
+.brand-title{
+
+    font-size:34px;
+
+}
+
+}

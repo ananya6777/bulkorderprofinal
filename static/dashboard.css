@@ -1,0 +1,341 @@
+/* DASHBOARD PAGE */
+
+* {
+    box-sizing: border-box;
+}
+
+.dashboard-page {
+    margin: 0;
+    min-height: 100vh;
+    background: #f7f0e5;
+    font-family: Georgia, serif;
+    color: #4b2b16;
+}
+
+
+/* TOP BAR */
+
+.top-bar {
+    height: 50px;
+    background: #c94f00;
+    border-bottom: 4px solid #5a2c14;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 18px;
+}
+
+.circles {
+    display: flex;
+    gap: 8px;
+}
+
+.circles span {
+    width: 12px;
+    height: 12px;
+
+    border: 2px solid #ffd15c;
+    border-radius: 50%;
+}
+
+.web-address {
+    width: 250px;
+
+    margin-left: 30px;
+    padding: 4px;
+
+    text-align: center;
+    color: white;
+
+    border: 2px solid #f2ad32;
+    border-radius: 4px;
+}
+
+
+/* MAIN LAYOUT */
+
+.dashboard-container {
+    display: flex;
+    min-height: calc(100vh - 54px);
+}
+
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 190px;
+
+    background: #176b3a;
+    color: #e7dcaa;
+
+    padding: 20px 10px;
+}
+
+.sidebar h2 {
+    color: #f2c440;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.sidebar h2 span {
+    display: block;
+}
+
+.sidebar a {
+    display: block;
+
+    padding: 10px 12px;
+    margin-bottom: 4px;
+
+    color: #ddd49d;
+    text-decoration: none;
+
+    border-radius: 5px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: #668f38;
+    color: #ffd95b;
+}
+
+.bottom-links {
+    margin-top: 30px;
+    padding-top: 12px;
+
+    border-top: 1px solid #3c8055;
+}
+
+
+/* MAIN CONTENT */
+
+.main-content {
+    flex: 1;
+    padding: 18px;
+}
+
+
+/* HEADER */
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.dashboard-header input {
+    width: 220px;
+    padding: 9px;
+
+    border: 2px solid #d86616;
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+}
+
+
+/* CARDS */
+
+.cards {
+    display: flex;
+    gap: 14px;
+
+    margin-bottom: 15px;
+}
+
+.card {
+    flex: 1;
+
+    background: #fff2d8;
+
+    border: 3px solid #4b2b16;
+    border-radius: 8px;
+
+    text-align: center;
+    padding: 15px 10px;
+}
+
+.card p {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.card h2 {
+    margin: 0;
+    color: #c95508;
+    font-size: 36px;
+}
+
+.pending-card {
+    border-color: #e9a324;
+}
+
+.green-number {
+    color: #176b3a;
+}
+
+
+/* WARNING */
+
+.warning {
+    margin-bottom: 15px;
+    padding: 11px;
+
+    background: #fbe4df;
+    color: #9e342c;
+
+    border: 2px solid #d95c51;
+    border-radius: 6px;
+}
+
+
+/* TABLE */
+
+.table-box {
+    background: white;
+
+    border: 3px solid #4b2b16;
+    border-radius: 8px;
+
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f8dfb3;
+    font-size: 16px;
+}
+
+th,
+td {
+    padding: 11px 14px;
+    text-align: left;
+
+    border-bottom: 1px solid #eadbc8;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.confirmed,
+.pending {
+    display: inline-block;
+
+    padding: 4px 9px;
+    border-radius: 15px;
+}
+
+.confirmed {
+    background: #dbeadf;
+    color: #176b3a;
+}
+
+.pending {
+    background: #fff0c8;
+    color: #9d6905;
+}
+
+.unpaid {
+    color: #c1483e;
+}
+
+
+/* BUTTONS */
+
+.dashboard-buttons {
+    margin-top: 15px;
+
+    padding: 12px;
+
+    background: #fff1d9;
+
+    border: 1px solid #c8aa7e;
+    border-radius: 6px;
+}
+
+.dashboard-buttons button {
+    padding: 10px 16px;
+
+    margin-right: 8px;
+
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.new-order {
+    background: #c95205;
+    color: #ffdd6f;
+
+    border: 2px solid #70310c;
+}
+
+.new-order:hover {
+    background: #a94304;
+}
+
+.export {
+    background: white;
+    color: #4b2b16;
+
+    border: 2px solid #5b3822;
+}
+
+.export:hover {
+    background: #f8dfb3;
+}
+
+
+/* SMALL SCREENS */
+
+@media (max-width: 800px) {
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .dashboard-container {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-header input {
+        width: 100%;
+    }
+
+}
