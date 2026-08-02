@@ -27,7 +27,6 @@
 
     </div>
 
-
     <div class="dashboard-container">
 
         <div class="sidebar">
@@ -41,19 +40,39 @@
                 Dashboard
             </a>
 
-            <a href="#">Orders</a>
-            <a href="#">Customers</a>
-            <a href="#">Stock</a>
-            <a href="#">Payments</a>
-            <a href="#">History</a>
+            <a href="{{ url_for('orders') }}">
+                Orders
+            </a>
+
+            <a href="{{ url_for('customers') }}">
+                Customers
+            </a>
+
+            <a href="#">
+                Stock
+            </a>
+
+            <a href="#">
+                Payments
+            </a>
+
+            <a href="#">
+                History
+            </a>
 
             <div class="bottom-links">
-                <a href="#">Settings</a>
-                <a href="{{ url_for('logout') }}">Logout</a>
+
+                <a href="#">
+                    Settings
+                </a>
+
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+
             </div>
 
         </div>
-
 
         <div class="main-content">
 
@@ -66,7 +85,6 @@
                     placeholder="Search orders...">
 
             </div>
-
 
             <div class="cards">
 
@@ -92,17 +110,16 @@
 
             </div>
 
-
             <div class="warning">
                 ⚠ Diwali cut-off in 3 days — 28 orders pending confirmation
             </div>
-
 
             <div class="table-box">
 
                 <table>
 
                     <thead>
+
                         <tr>
                             <th>Customer</th>
                             <th>Date</th>
@@ -110,6 +127,7 @@
                             <th>Payment</th>
                             <th>Status</th>
                         </tr>
+
                     </thead>
 
                     <tbody>
@@ -130,7 +148,9 @@
                             <td>James Patel</td>
                             <td>13 Dec</td>
                             <td>36</td>
-                            <td class="unpaid">Unpaid</td>
+                            <td class="unpaid">
+                                Unpaid
+                            </td>
                             <td>
                                 <span class="pending">
                                     Pending
@@ -155,7 +175,6 @@
                 </table>
 
             </div>
-
 
             <div class="dashboard-buttons">
 

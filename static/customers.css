@@ -1,0 +1,316 @@
+/* ---------- PAGE ---------- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f7f0e5;
+    font-family: Georgia, serif;
+    color: #4b2b16;
+}
+
+
+/* ---------- TOP BAR ---------- */
+
+.top-bar {
+    height: 50px;
+    background: #c94f00;
+    border-bottom: 4px solid #5a2c14;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 18px;
+}
+
+.circles {
+    display: flex;
+    gap: 8px;
+}
+
+.circles span {
+    width: 12px;
+    height: 12px;
+
+    border: 2px solid #ffd15c;
+    border-radius: 50%;
+}
+
+.web-address {
+    width: 250px;
+
+    margin-left: 30px;
+    padding: 4px;
+
+    text-align: center;
+    color: white;
+
+    border: 2px solid #f2ad32;
+    border-radius: 4px;
+}
+
+
+/* ---------- LAYOUT ---------- */
+
+.customers-container {
+    display: flex;
+    min-height: calc(100vh - 54px);
+}
+
+
+/* ---------- SIDEBAR ---------- */
+
+.sidebar {
+    width: 190px;
+    background: #176b3a;
+
+    color: #e7dcaa;
+    padding: 20px 10px;
+}
+
+.sidebar h2 {
+    color: #f2c440;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.sidebar h2 span {
+    display: block;
+}
+
+.sidebar a {
+    display: block;
+
+    padding: 10px 12px;
+    margin-bottom: 4px;
+
+    text-decoration: none;
+    color: #ddd49d;
+
+    border-radius: 5px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: #668f38;
+    color: #ffd95b;
+}
+
+.bottom-links {
+    margin-top: 30px;
+    padding-top: 12px;
+
+    border-top: 1px solid #3c8055;
+}
+
+
+/* ---------- MAIN CONTENT ---------- */
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+
+/* ---------- HEADER ---------- */
+
+.customers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.customers-header h1 {
+    font-size: 30px;
+}
+
+.customers-header p {
+    margin-top: 5px;
+    color: #816149;
+}
+
+.add-customer-button {
+    padding: 10px 18px;
+
+    background: #c95205;
+    color: #ffdd6f;
+
+    border: 2px solid #70310c;
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-family: Georgia, serif;
+    font-size: 15px;
+}
+
+.add-customer-button:hover {
+    background: #a94404;
+}
+
+
+/* ---------- SEARCH ---------- */
+
+.search-box {
+    display: flex;
+    gap: 10px;
+
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    flex: 1;
+
+    padding: 10px;
+
+    border: 2px solid #d86616;
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+}
+
+.search-box button {
+    padding: 10px 18px;
+
+    background: #176b3a;
+    color: white;
+
+    border: none;
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-family: Georgia, serif;
+}
+
+
+/* ---------- SUMMARY CARDS ---------- */
+
+.customer-summary {
+    display: flex;
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    flex: 1;
+
+    background: #fff2d8;
+
+    border: 3px solid #4b2b16;
+    border-radius: 8px;
+
+    text-align: center;
+
+    padding: 15px;
+}
+
+.summary-card p {
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.summary-card h2 {
+    color: #c95508;
+    font-size: 35px;
+}
+
+
+/* ---------- TABLE ---------- */
+
+.customers-table-box {
+    background: white;
+
+    border: 3px solid #4b2b16;
+    border-radius: 8px;
+
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f8dfb3;
+    font-size: 16px;
+}
+
+th,
+td {
+    padding: 12px;
+
+    text-align: left;
+
+    border-bottom: 1px solid #eadbc8;
+}
+
+tbody tr:hover {
+    background: #fff8ec;
+}
+
+
+/* ---------- BUTTON ---------- */
+
+.view-button {
+    padding: 7px 14px;
+
+    background: white;
+    color: #4b2b16;
+
+    border: 2px solid #5b3822;
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-family: Georgia, serif;
+}
+
+.view-button:hover {
+    background: #f8dfb3;
+}
+
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 800px) {
+
+    .customer-summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .customers-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .customers-container {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .customer-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+}

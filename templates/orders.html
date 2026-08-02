@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BulkOrder Pro Orders</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='orders.css') }}">
+</head>
+
+<body class="orders-page">
+
+    <div class="top-bar">
+
+        <div class="circles">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="web-address">
+            bulkorderpro.app
+        </div>
+
+    </div>
+
+
+    <div class="orders-container">
+
+        <div class="sidebar">
+
+            <h2>
+                BulkOrder
+                <span>Pro</span>
+            </h2>
+
+            <a href="{{ url_for('dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('orders') }}" class="active">
+                Orders
+            </a>
+
+            <a href="{{ url_for('customers') }}">
+                Customers
+            </a>
+
+            <a href="#">
+                Stock
+            </a>
+
+            <a href="#">
+                Payments
+            </a>
+
+            <a href="#">
+                History
+            </a>
+
+            <div class="bottom-links">
+                <a href="#">
+                    Settings
+                </a>
+
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+            </div>
+
+        </div>
+
+
+        <main class="main-content">
+
+            <div class="orders-header">
+
+                <div>
+                    <h1>Orders</h1>
+                    <p>View and manage customer pre-orders.</p>
+                </div>
+
+                <button class="new-order-button" type="button">
+                    + New Order
+                </button>
+
+            </div>
+
+
+            <div class="filter-box">
+
+                <input
+                    type="text"
+                    placeholder="Search by customer name or phone">
+
+                <select>
+                    <option value="">All Payments</option>
+                    <option value="paid">Paid</option>
+                    <option value="unpaid">Unpaid</option>
+                    <option value="deposit">Deposit</option>
+                </select>
+
+                <select>
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="completed">Completed</option>
+                </select>
+
+                <button type="button">
+                    Search
+                </button>
+
+            </div>
+
+
+            <div class="orders-table-box">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Pickup Date</th>
+                            <th>Items</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>#1042</td>
+                            <td>Anika Sharma</td>
+                            <td>0401 234 567</td>
+                            <td>12 Dec</td>
+                            <td>24</td>
+                            <td>
+                                <span class="paid">Paid</span>
+                            </td>
+                            <td>
+                                <span class="confirmed">Confirmed</span>
+                            </td>
+                            <td>
+                                <button class="view-button" type="button">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#1043</td>
+                            <td>James Patel</td>
+                            <td>0402 345 678</td>
+                            <td>13 Dec</td>
+                            <td>36</td>
+                            <td>
+                                <span class="unpaid">Unpaid</span>
+                            </td>
+                            <td>
+                                <span class="pending">Pending</span>
+                            </td>
+                            <td>
+                                <button class="view-button" type="button">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#1044</td>
+                            <td>Priya Singh</td>
+                            <td>0403 456 789</td>
+                            <td>14 Dec</td>
+                            <td>18</td>
+                            <td>
+                                <span class="paid">Paid</span>
+                            </td>
+                            <td>
+                                <span class="confirmed">Confirmed</span>
+                            </td>
+                            <td>
+                                <button class="view-button" type="button">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#1045</td>
+                            <td>Ravi Kumar</td>
+                            <td>0404 567 890</td>
+                            <td>15 Dec</td>
+                            <td>12</td>
+                            <td>
+                                <span class="deposit">Deposit</span>
+                            </td>
+                            <td>
+                                <span class="pending">Pending</span>
+                            </td>
+                            <td>
+                                <button class="view-button" type="button">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

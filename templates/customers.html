@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BulkOrder Pro Customers</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='customers.css') }}">
+</head>
+
+<body class="customers-page">
+
+    <div class="top-bar">
+
+        <div class="circles">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="web-address">
+            bulkorderpro.app
+        </div>
+
+    </div>
+
+
+    <div class="customers-container">
+
+        <div class="sidebar">
+
+            <h2>
+                BulkOrder
+                <span>Pro</span>
+            </h2>
+
+            <a href="{{ url_for('dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('orders') }}">
+                Orders
+            </a>
+
+            <a href="{{ url_for('customers') }}" class="active">
+                Customers
+            </a>
+
+            <a href="#">
+                Stock
+            </a>
+
+            <a href="#">
+                Payments
+            </a>
+
+            <a href="#">
+                History
+            </a>
+
+            <div class="bottom-links">
+
+                <a href="#">
+                    Settings
+                </a>
+
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <main class="main-content">
+
+            <div class="customers-header">
+
+                <div>
+                    <h1>Customers</h1>
+                    <p>View and manage customer details.</p>
+                </div>
+
+                <button type="button" class="add-customer-button">
+                    + Add Customer
+                </button>
+
+            </div>
+
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    placeholder="Search by customer name or phone number">
+
+                <button type="button">
+                    Search
+                </button>
+
+            </div>
+
+
+            <div class="customer-summary">
+
+                <div class="summary-card">
+                    <p>Total Customers</p>
+                    <h2>86</h2>
+                </div>
+
+                <div class="summary-card">
+                    <p>Active Orders</p>
+                    <h2>32</h2>
+                </div>
+
+                <div class="summary-card">
+                    <p>New This Month</p>
+                    <h2>11</h2>
+                </div>
+
+            </div>
+
+
+            <div class="customers-table-box">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Customer ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Total Orders</th>
+                            <th>Last Order</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>#C001</td>
+                            <td>Anika Sharma</td>
+                            <td>0401 234 567</td>
+                            <td>8</td>
+                            <td>12 Dec</td>
+                            <td>
+                                <button type="button" class="view-button">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#C002</td>
+                            <td>James Patel</td>
+                            <td>0402 345 678</td>
+                            <td>5</td>
+                            <td>13 Dec</td>
+                            <td>
+                                <button type="button" class="view-button">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#C003</td>
+                            <td>Priya Singh</td>
+                            <td>0403 456 789</td>
+                            <td>12</td>
+                            <td>14 Dec</td>
+                            <td>
+                                <button type="button" class="view-button">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#C004</td>
+                            <td>Ravi Kumar</td>
+                            <td>0404 567 890</td>
+                            <td>4</td>
+                            <td>15 Dec</td>
+                            <td>
+                                <button type="button" class="view-button">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
