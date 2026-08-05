@@ -7,6 +7,7 @@
 }
 
 body {
+    min-height: 100vh;
     background: #f7f0e5;
     font-family: Georgia, serif;
     color: #4b2b16;
@@ -66,7 +67,6 @@ body {
 .sidebar {
     width: 190px;
     background: #176b3a;
-
     color: #e7dcaa;
     padding: 20px 10px;
 }
@@ -83,7 +83,6 @@ body {
 
 .sidebar a {
     display: block;
-
     padding: 10px 12px;
     margin-bottom: 4px;
 
@@ -102,7 +101,6 @@ body {
 .bottom-links {
     margin-top: 30px;
     padding-top: 12px;
-
     border-top: 1px solid #3c8055;
 }
 
@@ -111,6 +109,7 @@ body {
 
 .main-content {
     flex: 1;
+    min-width: 0;
     padding: 20px;
 }
 
@@ -121,7 +120,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     margin-bottom: 20px;
 }
 
@@ -134,44 +132,28 @@ body {
     color: #816149;
 }
 
-.add-customer-button {
-    padding: 10px 18px;
-
-    background: #c95205;
-    color: #ffdd6f;
-
-    border: 2px solid #70310c;
-    border-radius: 6px;
-
-    cursor: pointer;
-
-    font-family: Georgia, serif;
-    font-size: 15px;
-}
-
-.add-customer-button:hover {
-    background: #a94404;
-}
-
 
 /* ---------- SEARCH ---------- */
 
 .search-box {
     display: flex;
     gap: 10px;
-
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .search-box input {
     flex: 1;
-
     padding: 10px;
 
     border: 2px solid #d86616;
     border-radius: 6px;
 
     font-family: Georgia, serif;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #176b3a;
 }
 
 .search-box button {
@@ -188,37 +170,30 @@ body {
     font-family: Georgia, serif;
 }
 
-
-/* ---------- SUMMARY CARDS ---------- */
-
-.customer-summary {
-    display: flex;
-    gap: 15px;
-
-    margin-bottom: 20px;
+.search-box button:hover {
+    background: #12552f;
 }
 
-.summary-card {
-    flex: 1;
+.clear-search {
+    display: inline-block;
+    padding: 10px 18px;
 
-    background: #fff2d8;
+    background: white;
+    color: #4b2b16;
 
-    border: 3px solid #4b2b16;
-    border-radius: 8px;
+    border: 2px solid #5b3822;
+    border-radius: 6px;
 
-    text-align: center;
-
-    padding: 15px;
+    text-decoration: none;
 }
 
-.summary-card p {
-    margin-bottom: 8px;
-    font-size: 16px;
+.clear-search:hover {
+    background: #f8dfb3;
 }
 
-.summary-card h2 {
-    color: #c95508;
-    font-size: 35px;
+.search-results-text {
+    margin-bottom: 12px;
+    color: #816149;
 }
 
 
@@ -230,7 +205,7 @@ body {
     border: 3px solid #4b2b16;
     border-radius: 8px;
 
-    overflow: hidden;
+    overflow-x: auto;
 }
 
 table {
@@ -246,7 +221,6 @@ th {
 th,
 td {
     padding: 12px;
-
     text-align: left;
 
     border-bottom: 1px solid #eadbc8;
@@ -256,8 +230,22 @@ tbody tr:hover {
     background: #fff8ec;
 }
 
+tbody tr:last-child td {
+    border-bottom: none;
+}
 
-/* ---------- BUTTON ---------- */
+
+/* ---------- ACTION BUTTONS ---------- */
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.action-buttons form {
+    margin: 0;
+}
 
 .view-button {
     padding: 7px 14px;
@@ -277,15 +265,37 @@ tbody tr:hover {
     background: #f8dfb3;
 }
 
+.delete-button {
+    padding: 7px 14px;
+
+    background: #c1483e;
+    color: white;
+
+    border: 2px solid #7a241f;
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-family: Georgia, serif;
+}
+
+.delete-button:hover {
+    background: #9f3028;
+}
+
+
+/* ---------- EMPTY MESSAGE ---------- */
+
+.empty-message {
+    padding: 25px;
+    text-align: center;
+    color: #816149;
+}
+
 
 /* ---------- RESPONSIVE ---------- */
 
 @media (max-width: 800px) {
-
-    .customer-summary {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-    }
 
     .customers-header {
         flex-direction: column;
@@ -305,12 +315,17 @@ tbody tr:hover {
         width: 100%;
     }
 
-    .customer-summary {
-        grid-template-columns: 1fr;
-    }
-
     .search-box {
         flex-direction: column;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .clear-search {
+        text-align: center;
     }
 
 }

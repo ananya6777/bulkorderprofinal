@@ -113,6 +113,7 @@
 
 .main-content {
     flex: 1;
+    min-width: 0;
     padding: 18px;
 }
 
@@ -140,6 +141,11 @@
     border-radius: 6px;
 
     font-family: Georgia, serif;
+}
+
+.dashboard-header input:focus {
+    outline: none;
+    border-color: #176b3a;
 }
 
 
@@ -206,7 +212,7 @@
     border: 3px solid #4b2b16;
     border-radius: 8px;
 
-    overflow: hidden;
+    overflow-x: auto;
 }
 
 table {
@@ -223,12 +229,17 @@ th,
 td {
     padding: 11px 14px;
     text-align: left;
+    vertical-align: middle;
 
     border-bottom: 1px solid #eadbc8;
 }
 
 tbody tr:last-child td {
     border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #fff8ec;
 }
 
 .confirmed,
@@ -267,6 +278,10 @@ tbody tr:last-child td {
     border-radius: 6px;
 }
 
+.dashboard-buttons a {
+    text-decoration: none;
+}
+
 .dashboard-buttons button {
     padding: 10px 16px;
 
@@ -303,6 +318,15 @@ tbody tr:last-child td {
 }
 
 
+/* EMPTY TABLE MESSAGE */
+
+.table-box td[colspan="5"] {
+    text-align: center;
+    padding: 24px;
+    color: #846852;
+}
+
+
 /* SMALL SCREENS */
 
 @media (max-width: 800px) {
@@ -336,6 +360,17 @@ tbody tr:last-child td {
 
     .dashboard-header input {
         width: 100%;
+    }
+
+    .dashboard-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dashboard-buttons button {
+        width: 100%;
+        margin-right: 0;
     }
 
 }

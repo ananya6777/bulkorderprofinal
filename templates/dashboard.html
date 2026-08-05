@@ -77,41 +77,37 @@
         <div class="main-content">
 
             <div class="dashboard-header">
-
                 <h1>Dashboard Overview</h1>
-
-                <input
-                    type="text"
-                    placeholder="Search orders...">
-
             </div>
 
             <div class="cards">
 
                 <div class="card">
                     <p>Total Orders</p>
-                    <h2>142</h2>
+                    <h2>{{ total_orders }}</h2>
                 </div>
 
                 <div class="card pending-card">
                     <p>Pending</p>
-                    <h2>28</h2>
+                    <h2>{{ pending_orders }}</h2>
                 </div>
 
                 <div class="card">
-                    <p>Low Stock</p>
-                    <h2>6</h2>
+                    <p>Customers</p>
+                    <h2>{{ total_customers }}</h2>
                 </div>
 
                 <div class="card">
                     <p>Unpaid</p>
-                    <h2 class="green-number">15</h2>
+                    <h2 class="green-number">
+                        {{ unpaid_orders }}
+                    </h2>
                 </div>
 
             </div>
 
             <div class="warning">
-                ⚠ Diwali cut-off in 3 days — 28 orders pending confirmation
+                ⚠ {{ pending_orders }} orders pending confirmation
             </div>
 
             <div class="table-box">
@@ -122,7 +118,7 @@
 
                         <tr>
                             <th>Customer</th>
-                            <th>Date</th>
+                            <th>Pickup Date</th>
                             <th>Items</th>
                             <th>Payment</th>
                             <th>Status</th>
@@ -132,59 +128,63 @@
 
                     <tbody>
 
+                        {% for order in recent_orders %}
+
                         <tr>
-                            <td>Anika Sharma</td>
-                            <td>12 Dec</td>
-                            <td>24</td>
-                            <td>Paid</td>
+
                             <td>
-                                <span class="confirmed">
-                                    Confirmed
-                                </span>
+                                {{ order["customer_name"] }}
+                            </td>
+
+                            <td>
+                                {{ order["pickup_date"] }}
+                            </td>
+
+                            <td>
+                                {{ order["items"] }}
+                            </td>
+
+                            <td class="{% if order['payment_status'] == 'Unpaid' %}unpaid{% endif %}">
+                                {{ order["payment_status"] }}
+                            </td>
+
+                            <td>
+
+                                {% if order["order_status"] == "Confirmed" %}
+
+                                    <span class="confirmed">
+                                        Confirmed
+                                    </span>
+
+                                {% elif order["order_status"] == "Pending" %}
+
+                                    <span class="pending">
+                                        Pending
+                                    </span>
+
+                                {% else %}
+
+                                    {{ order["order_status"] }}
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="5">
+                                No orders have been added yet.
                             </td>
                         </tr>
 
-                        <tr>
-                            <td>James Patel</td>
-                            <td>13 Dec</td>
-                            <td>36</td>
-                            <td class="unpaid">
-                                Unpaid
-                            </td>
-                            <td>
-                                <span class="pending">
-                                    Pending
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Priya Singh</td>
-                            <td>14 Dec</td>
-                            <td>18</td>
-                            <td>Paid</td>
-                            <td>
-                                <span class="confirmed">
-                                    Confirmed
-                                </span>
-                            </td>
-                        </tr>
+                        {% endfor %}
 
                     </tbody>
 
                 </table>
-
-            </div>
-
-            <div class="dashboard-buttons">
-
-                <button class="new-order" type="button">
-                    + New Order
-                </button>
-
-                <button class="export" type="button">
-                    Export CSV
-                </button>
 
             </div>
 

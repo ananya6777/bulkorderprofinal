@@ -62,6 +62,7 @@
             </a>
 
             <div class="bottom-links">
+
                 <a href="#">
                     Settings
                 </a>
@@ -69,6 +70,7 @@
                 <a href="{{ url_for('logout') }}">
                     Logout
                 </a>
+
             </div>
 
         </div>
@@ -83,12 +85,76 @@
                     <p>View and manage customer pre-orders.</p>
                 </div>
 
-                <button class="new-order-button" type="button">
-                    + New Order
-                </button>
-
             </div>
 
+
+            <!-- Add order form -->
+
+            <form
+                class="add-order-form"
+                method="POST"
+                action="{{ url_for('add_order') }}">
+
+                <input
+                    type="text"
+                    name="customer_name"
+                    placeholder="Customer name"
+                    required>
+
+                <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone number"
+                    required>
+
+                <input
+                    type="date"
+                    name="pickup_date"
+                    required>
+
+                <input
+                    type="number"
+                    name="items"
+                    min="1"
+                    placeholder="Number of items"
+                    required>
+
+                <select name="payment_status" required>
+
+                    <option value="" disabled selected>
+                        Payment status
+                    </option>
+
+                    <option value="Paid">Paid</option>
+                    <option value="Unpaid">Unpaid</option>
+                    <option value="Deposit">Deposit</option>
+
+                </select>
+
+                <select name="order_status" required>
+
+                    <option value="" disabled selected>
+                        Order status
+                    </option>
+
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+
+                </select>
+
+                <button
+                    class="new-order-button"
+                    type="submit">
+
+                    + Add Order
+
+                </button>
+
+            </form>
+
+
+            <!-- Filter area -->
 
             <div class="filter-box">
 
@@ -117,11 +183,14 @@
             </div>
 
 
+            <!-- Orders table -->
+
             <div class="orders-table-box">
 
                 <table>
 
                     <thead>
+
                         <tr>
                             <th>Order ID</th>
                             <th>Customer</th>
@@ -132,85 +201,82 @@
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
+
                     </thead>
 
                     <tbody>
 
-                        <tr>
-                            <td>#1042</td>
-                            <td>Anika Sharma</td>
-                            <td>0401 234 567</td>
-                            <td>12 Dec</td>
-                            <td>24</td>
-                            <td>
-                                <span class="paid">Paid</span>
-                            </td>
-                            <td>
-                                <span class="confirmed">Confirmed</span>
-                            </td>
-                            <td>
-                                <button class="view-button" type="button">
-                                    View
-                                </button>
-                            </td>
-                        </tr>
+                        {% for order in orders %}
 
                         <tr>
-                            <td>#1043</td>
-                            <td>James Patel</td>
-                            <td>0402 345 678</td>
-                            <td>13 Dec</td>
-                            <td>36</td>
+
                             <td>
-                                <span class="unpaid">Unpaid</span>
+                                #{{ order["id"] }}
                             </td>
+
                             <td>
-                                <span class="pending">Pending</span>
+                                {{ order["customer_name"] }}
                             </td>
+
                             <td>
-                                <button class="view-button" type="button">
+                                {{ order["phone"] }}
+                            </td>
+
+                            <td>
+                                {{ order["pickup_date"] }}
+                            </td>
+
+                            <td>
+                                {{ order["items"] }}
+                            </td>
+
+                            <td>
+
+                                <span class="{{ order['payment_status']|lower }}">
+
+                                    {{ order["payment_status"] }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span class="{{ order['order_status']|lower }}">
+
+                                    {{ order["order_status"] }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="view-button"
+                                    type="button">
+
                                     View
+
                                 </button>
+
                             </td>
+
                         </tr>
 
-                        <tr>
-                            <td>#1044</td>
-                            <td>Priya Singh</td>
-                            <td>0403 456 789</td>
-                            <td>14 Dec</td>
-                            <td>18</td>
-                            <td>
-                                <span class="paid">Paid</span>
-                            </td>
-                            <td>
-                                <span class="confirmed">Confirmed</span>
-                            </td>
-                            <td>
-                                <button class="view-button" type="button">
-                                    View
-                                </button>
-                            </td>
-                        </tr>
+                        {% else %}
 
                         <tr>
-                            <td>#1045</td>
-                            <td>Ravi Kumar</td>
-                            <td>0404 567 890</td>
-                            <td>15 Dec</td>
-                            <td>12</td>
-                            <td>
-                                <span class="deposit">Deposit</span>
+
+                            <td colspan="8" class="empty-message">
+
+                                No orders have been added yet.
+
                             </td>
-                            <td>
-                                <span class="pending">Pending</span>
-                            </td>
-                            <td>
-                                <button class="view-button" type="button">
-                                    View
-                                </button>
-                            </td>
+
                         </tr>
+
+                        {% endfor %}
 
                     </tbody>
 
