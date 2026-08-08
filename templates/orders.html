@@ -49,7 +49,7 @@
                 Customers
             </a>
 
-            <a href="#">
+            <a href="{{ url_for('stock') }}">
                 Stock
             </a>
 
@@ -88,99 +88,79 @@
             </div>
 
 
-            <!-- Add order form -->
+            <!-- Search and filters -->
 
             <form
-                class="add-order-form"
-                method="POST"
-                action="{{ url_for('add_order') }}">
+                class="filter-box"
+                method="GET"
+                action="{{ url_for('orders') }}">
 
                 <input
                     type="text"
-                    name="customer_name"
-                    placeholder="Customer name"
-                    required>
-
-                <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Phone number"
-                    required>
-
-                <input
-                    type="date"
-                    name="pickup_date"
-                    required>
-
-                <input
-                    type="number"
-                    name="items"
-                    min="1"
-                    placeholder="Number of items"
-                    required>
-
-                <select name="payment_status" required>
-
-                    <option value="" disabled selected>
-                        Payment status
-                    </option>
-
-                    <option value="Paid">Paid</option>
-                    <option value="Unpaid">Unpaid</option>
-                    <option value="Deposit">Deposit</option>
-
-                </select>
-
-                <select name="order_status" required>
-
-                    <option value="" disabled selected>
-                        Order status
-                    </option>
-
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Completed">Completed</option>
-
-                </select>
-
-                <button
-                    class="new-order-button"
-                    type="submit">
-
-                    + Add Order
-
-                </button>
-
-            </form>
-
-
-            <!-- Filter area -->
-
-            <div class="filter-box">
-
-                <input
-                    type="text"
+                    name="search"
+                    value="{{ search }}"
                     placeholder="Search by customer name or phone">
 
-                <select>
-                    <option value="">All Payments</option>
-                    <option value="paid">Paid</option>
-                    <option value="unpaid">Unpaid</option>
-                    <option value="deposit">Deposit</option>
+                <select name="payment">
+
+                    <option value="">
+                        All Payments
+                    </option>
+
+                    <option value="Paid"
+                            {% if payment == "Paid" %}selected{% endif %}>
+                        Paid
+                    </option>
+
+                    <option value="Unpaid"
+                            {% if payment == "Unpaid" %}selected{% endif %}>
+                        Unpaid
+                    </option>
+
+                    <option value="Deposit"
+                            {% if payment == "Deposit" %}selected{% endif %}>
+                        Deposit
+                    </option>
+
                 </select>
 
-                <select>
-                    <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="completed">Completed</option>
+                <select name="status">
+
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    <option value="Pending"
+                            {% if status == "Pending" %}selected{% endif %}>
+                        Pending
+                    </option>
+
+                    <option value="Confirmed"
+                            {% if status == "Confirmed" %}selected{% endif %}>
+                        Confirmed
+                    </option>
+
+                    <option value="Completed"
+                            {% if status == "Completed" %}selected{% endif %}>
+                        Completed
+                    </option>
+
                 </select>
 
-                <button type="button">
+                <button type="submit">
                     Search
                 </button>
 
-            </div>
+                {% if search or payment or status %}
+
+                <a href="{{ url_for('orders') }}"
+                   class="clear-search">
+                    Clear
+                </a>
+
+                {% endif %}
+
+            </form>
 
 
             <!-- Orders table -->
@@ -196,10 +176,10 @@
                             <th>Customer</th>
                             <th>Phone</th>
                             <th>Pickup Date</th>
-                            <th>Items</th>
+                            <th>Products</th>
+                            <th>Total Qty</th>
                             <th>Payment</th>
                             <th>Status</th>
-                            <th>Action</th>
                         </tr>
 
                     </thead>
@@ -227,15 +207,38 @@
                             </td>
 
                             <td>
-                                {{ order["items"] }}
+
+                                {% if order["products"] %}
+
+                                    {% for product in order["products"] %}
+
+                                        <div class="order-product">
+                                            {{ product["quantity"] }}
+                                            ×
+                                            {{ product["item_name"] }}
+                                            ({{ product["brand"] }})
+                                        </div>
+
+                                    {% endfor %}
+
+                                {% else %}
+
+                                    <span class="old-order">
+                                        Older order
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ order["total_items"] }}
                             </td>
 
                             <td>
 
                                 <span class="{{ order['payment_status']|lower }}">
-
                                     {{ order["payment_status"] }}
-
                                 </span>
 
                             </td>
@@ -243,22 +246,8 @@
                             <td>
 
                                 <span class="{{ order['order_status']|lower }}">
-
                                     {{ order["order_status"] }}
-
                                 </span>
-
-                            </td>
-
-                            <td>
-
-                                <button
-                                    class="view-button"
-                                    type="button">
-
-                                    View
-
-                                </button>
 
                             </td>
 
@@ -268,9 +257,10 @@
 
                         <tr>
 
-                            <td colspan="8" class="empty-message">
+                            <td colspan="8"
+                                class="empty-message">
 
-                                No orders have been added yet.
+                                No customer orders have been submitted yet.
 
                             </td>
 

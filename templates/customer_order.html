@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BulkOrder Pro Customer Order</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='customer_order.css') }}">
+</head>
+
+<body>
+
+    <div class="customer-page">
+
+        <div class="customer-card">
+
+            <h1>BulkOrder Pro</h1>
+
+            <h2>Place a Bulk Order</h2>
+
+            <p>
+                Enter your details and choose the quantity you would like
+                for each available product.
+            </p>
+
+            {% if error %}
+
+            <p class="error-message">
+                {{ error }}
+            </p>
+
+            {% endif %}
+
+            <form
+                method="POST"
+                action="{{ url_for('submit_customer_order') }}">
+
+                <label for="customer_name">
+                    Full Name
+                </label>
+
+                <input
+                    id="customer_name"
+                    type="text"
+                    name="customer_name"
+                    required>
+
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    id="phone"
+                    type="tel"
+                    name="phone"
+                    required>
+
+
+                <label for="pickup_date">
+                    Pickup Date
+                </label>
+
+                <input
+                    id="pickup_date"
+                    type="date"
+                    name="pickup_date"
+                    required>
+
+
+                <h3>
+                    Products
+                </h3>
+
+                {% if stock_items %}
+
+                    {% for item in stock_items %}
+
+                    <div class="product-row">
+
+                        <div class="product-details">
+
+                            <strong>
+                                {{ item["item_name"] }}
+                            </strong>
+
+                            <p>
+                                Brand: {{ item["brand"] }}
+                            </p>
+
+                            <p>
+                                Price: ${{ "%.2f"|format(item["price"]) }}
+                            </p>
+
+                            <p>
+                                Available: {{ item["stock_quantity"] }}
+                            </p>
+
+                        </div>
+
+                        <div class="quantity-box">
+
+                            <label for="quantity_{{ item['id'] }}">
+                                Quantity
+                            </label>
+
+                            <input
+                                id="quantity_{{ item['id'] }}"
+                                type="number"
+                                name="quantity_{{ item['id'] }}"
+                                min="0"
+                                max="{{ item['stock_quantity'] }}"
+                                value="0">
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p class="no-stock-message">
+                        No products are currently available.
+                    </p>
+
+                {% endif %}
+
+
+                {% if stock_items %}
+
+                <button type="submit">
+                    Place Order
+                </button>
+
+                {% endif %}
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

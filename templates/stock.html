@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BulkOrder Pro Stock</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='stock.css') }}">
+</head>
+
+<body>
+
+    <div class="top-bar">
+
+        <div class="circles">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="web-address">
+            bulkorderpro.app
+        </div>
+
+    </div>
+
+    <div class="stock-container">
+
+        <div class="sidebar">
+
+            <h2>
+                BulkOrder
+                <span>Pro</span>
+            </h2>
+
+            <a href="{{ url_for('dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('orders') }}">
+                Orders
+            </a>
+
+            <a href="{{ url_for('customers') }}">
+                Customers
+            </a>
+
+            <a href="{{ url_for('stock') }}" class="active">
+                Stock
+            </a>
+
+            <a href="#">
+                Payments
+            </a>
+
+            <a href="#">
+                History
+            </a>
+
+            <div class="bottom-links">
+
+                <a href="#">
+                    Settings
+                </a>
+
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+        <main class="main-content">
+
+            <div class="stock-header">
+
+                <h1>Stock</h1>
+
+                <p>
+                    Add and manage products available for customer orders.
+                </p>
+
+            </div>
+
+            <form
+                class="add-stock-form"
+                method="POST"
+                action="{{ url_for('add_stock') }}">
+
+                <input
+                    type="text"
+                    name="item_name"
+                    placeholder="Item name"
+                    required>
+
+                <input
+                    type="text"
+                    name="brand"
+                    placeholder="Brand"
+                    required>
+
+                <input
+                    type="number"
+                    name="stock_quantity"
+                    min="0"
+                    placeholder="Stock quantity"
+                    required>
+
+                <input
+                    type="number"
+                    name="price"
+                    min="0"
+                    step="0.01"
+                    placeholder="Price"
+                    required>
+
+                <button type="submit">
+                    + Add Item
+                </button>
+
+            </form>
+
+            <div class="stock-table-box">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Item</th>
+                            <th>Brand</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in stock_items %}
+
+                        <tr>
+
+                            <td>#S{{ "%03d"|format(item["id"]) }}</td>
+
+                            <td>{{ item["item_name"] }}</td>
+
+                            <td>{{ item["brand"] }}</td>
+
+                            <td>{{ item["stock_quantity"] }}</td>
+
+                            <td>${{ "%.2f"|format(item["price"]) }}</td>
+
+                            <td>
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('delete_stock', stock_id=item['id']) }}">
+
+                                    <button
+                                        type="submit"
+                                        class="delete-button">
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="6" class="empty-message">
+                                No stock items have been added yet.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
