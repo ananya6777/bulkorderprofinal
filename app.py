@@ -37,7 +37,7 @@ def create_database():
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    # ---------------- CUSTOMERS TABLE ----------------
+    # CUSTOMERS TABLE
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS customers (
@@ -48,7 +48,7 @@ def create_database():
         )
     """)
 
-    # ---------------- STOCK TABLE ----------------
+    # STOCK TABLE
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS stock (
@@ -60,10 +60,7 @@ def create_database():
         )
     """)
 
-    # ---------------- ORDERS TABLE ----------------
-    #
-    # items is kept so your existing database still works.
-    # For new orders it stores the TOTAL quantity in the order.
+    # ORDERS TABLE
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS orders (
@@ -78,9 +75,7 @@ def create_database():
         )
     """)
 
-    # ---------------- ORDER ITEMS TABLE ----------------
-    #
-    # This allows ONE order to contain MULTIPLE products.
+    # ORDER ITEMS TABLE
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS order_items (
@@ -93,7 +88,8 @@ def create_database():
         )
     """)
 
-    # Make sure older orders tables have stock_id.
+    # Makes sure older databases have stock_id
+
     cursor.execute("PRAGMA table_info(orders)")
     order_columns = [column[1] for column in cursor.fetchall()]
 
@@ -174,8 +170,6 @@ def submit_customer_order():
         ""
     )
 
-    # Make sure basic customer information was entered.
-
     if not customer_name or not phone or not pickup_date:
 
         return render_template(
@@ -187,8 +181,6 @@ def submit_customer_order():
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    # Get every product currently available.
-
     cursor.execute("""
         SELECT *
         FROM stock
@@ -199,16 +191,6 @@ def submit_customer_order():
     stock_items = cursor.fetchall()
 
     selected_items = []
-
-    # Customer order page sends:
-    #
-    # quantity_1
-    # quantity_2
-    # quantity_3
-    #
-    # etc.
-    #
-    # 0 means the customer does not want that product.
 
     for item in stock_items:
 
@@ -228,9 +210,6 @@ def submit_customer_order():
 
         if quantity > 0:
 
-            # Check that customer did not order
-            # more than the store currently has.
-
             if quantity > item["stock_quantity"]:
 
                 connection.close()
@@ -249,8 +228,6 @@ def submit_customer_order():
                 "quantity": quantity
             })
 
-    # Customer must order at least one product.
-
     if not selected_items:
 
         connection.close()
@@ -261,7 +238,7 @@ def submit_customer_order():
             error="Please enter a quantity for at least one product."
         )
 
-    # ---------------- FIND CUSTOMER ----------------
+    # FIND CUSTOMER
 
     cursor.execute("""
         SELECT id
@@ -275,8 +252,6 @@ def submit_customer_order():
 
         customer_id = customer["id"]
 
-        # Keep their name up to date.
-
         cursor.execute("""
             UPDATE customers
             SET customer_name = ?
@@ -287,8 +262,6 @@ def submit_customer_order():
         ))
 
     else:
-
-        # Create a new customer automatically.
 
         cursor.execute("""
             INSERT INTO customers (
@@ -303,17 +276,14 @@ def submit_customer_order():
 
         customer_id = cursor.lastrowid
 
-    # ---------------- TOTAL ITEMS ----------------
+    # TOTAL ITEMS
 
     total_items = sum(
         item["quantity"]
         for item in selected_items
     )
 
-    # ---------------- CREATE ONE ORDER ----------------
-    #
-    # The customer may order many products,
-    # but they all belong to ONE order ID.
+    # CREATE ORDER
 
     cursor.execute("""
         INSERT INTO orders (
@@ -336,7 +306,7 @@ def submit_customer_order():
 
     order_id = cursor.lastrowid
 
-    # ---------------- SAVE PRODUCTS ----------------
+    # SAVE EACH PRODUCT
 
     for item in selected_items:
 
@@ -353,7 +323,7 @@ def submit_customer_order():
             item["quantity"]
         ))
 
-        # Reduce the amount available in stock.
+        # Automatically reduce stock
 
         cursor.execute("""
             UPDATE stock
@@ -437,45 +407,31 @@ def dashboard():
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    # Total customers
-
     cursor.execute("""
         SELECT COUNT(*)
         FROM customers
     """)
-
     total_customers = cursor.fetchone()[0]
-
-    # Total orders
 
     cursor.execute("""
         SELECT COUNT(*)
         FROM orders
     """)
-
     total_orders = cursor.fetchone()[0]
-
-    # Pending orders
 
     cursor.execute("""
         SELECT COUNT(*)
         FROM orders
         WHERE order_status = 'Pending'
     """)
-
     pending_orders = cursor.fetchone()[0]
-
-    # Unpaid orders
 
     cursor.execute("""
         SELECT COUNT(*)
         FROM orders
         WHERE payment_status = 'Unpaid'
     """)
-
     unpaid_orders = cursor.fetchone()[0]
-
-    # Most recent orders
 
     cursor.execute("""
         SELECT
@@ -574,26 +530,18 @@ def customers():
 
     customer_records = cursor.fetchall()
 
-    # Total customers
-
     cursor.execute("""
         SELECT COUNT(*)
         FROM customers
     """)
-
     total_customers = cursor.fetchone()[0]
-
-    # Customers with pending orders
 
     cursor.execute("""
         SELECT COUNT(DISTINCT customer_id)
         FROM orders
         WHERE order_status = 'Pending'
     """)
-
     active_customers = cursor.fetchone()[0]
-
-    # New customers this month
 
     cursor.execute("""
         SELECT COUNT(*)
@@ -601,7 +549,6 @@ def customers():
         WHERE strftime('%Y-%m', date_added)
         = strftime('%Y-%m', 'now')
     """)
-
     new_customers = cursor.fetchone()[0]
 
     connection.close()
@@ -632,8 +579,6 @@ def delete_customer(customer_id):
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    # Find customer's orders.
-
     cursor.execute("""
         SELECT id
         FROM orders
@@ -642,8 +587,6 @@ def delete_customer(customer_id):
 
     customer_orders = cursor.fetchall()
 
-    # Delete their order items.
-
     for order in customer_orders:
 
         cursor.execute("""
@@ -651,14 +594,10 @@ def delete_customer(customer_id):
             WHERE order_id = ?
         """, (order["id"],))
 
-    # Delete their orders.
-
     cursor.execute("""
         DELETE FROM orders
         WHERE customer_id = ?
     """, (customer_id,))
-
-    # Delete customer.
 
     cursor.execute("""
         DELETE FROM customers
@@ -718,8 +657,6 @@ def orders():
 
     values = []
 
-    # Search by name or phone.
-
     if search:
 
         query += """
@@ -732,8 +669,6 @@ def orders():
         values.append(f"%{search}%")
         values.append(f"%{search}%")
 
-    # Filter payment.
-
     if payment:
 
         query += """
@@ -741,8 +676,6 @@ def orders():
         """
 
         values.append(payment)
-
-    # Filter status.
 
     if status:
 
@@ -762,8 +695,6 @@ def orders():
 
     orders_with_items = []
 
-    # Get all individual products for every order.
-
     for order in order_records:
 
         cursor.execute("""
@@ -782,17 +713,12 @@ def orders():
 
         products = cursor.fetchall()
 
-        # New customer orders will have products
-        # inside order_items.
-
         if products:
 
             total_items = sum(
                 product["quantity"]
                 for product in products
             )
-
-        # Old orders are still supported.
 
         else:
             total_items = order["items"]
@@ -829,27 +755,135 @@ def stock():
     if not user_logged_in():
         return redirect(url_for("login_page"))
 
+    stock_filter = request.args.get(
+        "filter",
+        "all"
+    )
+
     connection = get_database_connection()
     cursor = connection.cursor()
 
     cursor.execute("""
         SELECT *
         FROM stock
-        ORDER BY item_name
+        ORDER BY stock_quantity ASC, item_name ASC
     """)
 
-    stock_items = cursor.fetchall()
+    stock_records = cursor.fetchall()
+
+    all_stock_items = []
+    low_stock_items = []
+
+    total_products = 0
+    in_stock_count = 0
+    running_low_count = 0
+    low_stock_count = 0
+    out_of_stock_count = 0
+
+    for item in stock_records:
+
+        quantity = item["stock_quantity"]
+
+        total_products += 1
+
+        if quantity == 0:
+
+            status = "Out of Stock"
+            status_key = "out"
+
+            out_of_stock_count += 1
+
+        elif quantity < 5:
+
+            status = "Low Stock Alert"
+            status_key = "low"
+
+            low_stock_count += 1
+
+        elif quantity <= 10:
+
+            status = "Running Low"
+            status_key = "running"
+
+            running_low_count += 1
+
+        else:
+
+            status = "In Stock"
+            status_key = "in"
+
+            in_stock_count += 1
+
+        stock_item = {
+            "id": item["id"],
+            "item_name": item["item_name"],
+            "brand": item["brand"],
+            "stock_quantity": quantity,
+            "price": item["price"],
+            "status": status,
+            "status_key": status_key
+        }
+
+        all_stock_items.append(stock_item)
+
+        if quantity < 5:
+            low_stock_items.append(stock_item)
+
+    # FILTER STOCK LIST
+
+    if stock_filter == "in":
+
+        stock_items = [
+            item for item in all_stock_items
+            if item["status_key"] == "in"
+        ]
+
+    elif stock_filter == "running":
+
+        stock_items = [
+            item for item in all_stock_items
+            if item["status_key"] == "running"
+        ]
+
+    elif stock_filter == "low":
+
+        stock_items = [
+            item for item in all_stock_items
+            if item["status_key"] == "low"
+        ]
+
+    elif stock_filter == "out":
+
+        stock_items = [
+            item for item in all_stock_items
+            if item["status_key"] == "out"
+        ]
+
+    else:
+
+        stock_filter = "all"
+        stock_items = all_stock_items
 
     connection.close()
 
     return render_template(
         "stock.html",
-        stock_items=stock_items
+
+        stock_items=stock_items,
+        low_stock_items=low_stock_items,
+
+        stock_filter=stock_filter,
+
+        total_products=total_products,
+        in_stock_count=in_stock_count,
+        running_low_count=running_low_count,
+        low_stock_count=low_stock_count,
+        out_of_stock_count=out_of_stock_count
     )
 
 
 # =========================================================
-# ADD STOCK
+# ADD STOCK ITEM
 # =========================================================
 
 @app.route("/stock/add", methods=["POST"])
@@ -903,6 +937,51 @@ def add_stock():
         brand,
         stock_quantity,
         price
+    ))
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("stock"))
+
+
+# =========================================================
+# REFILL STOCK
+# =========================================================
+
+@app.route(
+    "/stock/refill/<int:stock_id>",
+    methods=["POST"]
+)
+def refill_stock(stock_id):
+
+    if not user_logged_in():
+        return redirect(url_for("login_page"))
+
+    refill_quantity = request.form.get(
+        "refill_quantity",
+        ""
+    )
+
+    try:
+        refill_quantity = int(refill_quantity)
+
+    except ValueError:
+        return redirect(url_for("stock"))
+
+    if refill_quantity <= 0:
+        return redirect(url_for("stock"))
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE stock
+        SET stock_quantity = stock_quantity + ?
+        WHERE id = ?
+    """, (
+        refill_quantity,
+        stock_id
     ))
 
     connection.commit()

@@ -5,17 +5,22 @@
 body {
     margin: 0;
     min-height: 100vh;
+
     background: #f7f0e5;
     color: #4b2b16;
+
     font-family: Georgia, serif;
 }
+
 
 /* TOP BAR */
 
 .top-bar {
     height: 50px;
+
     display: flex;
     align-items: center;
+
     padding: 0 18px;
 
     background: #c94f00;
@@ -37,6 +42,7 @@ body {
 
 .web-address {
     width: 250px;
+
     margin-left: 30px;
     padding: 4px;
 
@@ -47,17 +53,21 @@ body {
     border-radius: 4px;
 }
 
+
 /* LAYOUT */
 
 .stock-container {
     display: flex;
+
     min-height: calc(100vh - 54px);
 }
+
 
 /* SIDEBAR */
 
 .sidebar {
     width: 190px;
+
     padding: 20px 10px;
 
     background: #176b3a;
@@ -101,13 +111,18 @@ body {
     border-top: 1px solid #3c8055;
 }
 
+
 /* MAIN CONTENT */
 
 .main-content {
     flex: 1;
     min-width: 0;
+
     padding: 20px;
 }
+
+
+/* STOCK HEADER */
 
 .stock-header {
     margin-bottom: 18px;
@@ -115,19 +130,154 @@ body {
 
 .stock-header h1 {
     margin: 0 0 5px;
+
     font-size: 30px;
 }
 
 .stock-header p {
     margin: 0;
+
     color: #846852;
 }
+
+
+/* STOCK SUMMARY CARDS */
+
+.stock-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.summary-card {
+    padding: 14px;
+
+    background: #fff2d8;
+    color: #4b2b16;
+
+    border: 2px solid #4b2b16;
+    border-radius: 8px;
+
+    text-align: center;
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+
+    background: #fff8ec;
+}
+
+.summary-card p {
+    margin: 0 0 7px;
+
+    font-size: 14px;
+}
+
+.summary-card h2 {
+    margin: 0;
+
+    font-size: 28px;
+    color: #c95508;
+}
+
+.running-card {
+    border-color: #d9a126;
+}
+
+.low-card {
+    border-color: #c1483e;
+}
+
+.out-card {
+    border-color: #666;
+}
+
+.selected-card {
+    background: #f8dfb3;
+
+    border-width: 3px;
+}
+
+
+/* QUICK FILTER BUTTONS */
+
+.stock-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 18px;
+}
+
+.stock-filters span {
+    margin-right: 4px;
+
+    font-weight: bold;
+}
+
+.stock-filters a {
+    padding: 8px 13px;
+
+    background: white;
+    color: #4b2b16;
+
+    border: 2px solid #5b3822;
+    border-radius: 6px;
+
+    text-decoration: none;
+}
+
+.stock-filters a:hover {
+    background: #f8dfb3;
+}
+
+.stock-filters .active-filter {
+    background: #176b3a;
+    color: white;
+
+    border-color: #176b3a;
+}
+
+
+/* STOCK ALERT BOX */
+
+.stock-alert {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+
+    background: #fbe1dd;
+    color: #9f3028;
+
+    border: 2px solid #c1483e;
+    border-radius: 7px;
+}
+
+.stock-alert h3 {
+    margin: 0 0 10px;
+
+    font-size: 18px;
+}
+
+.stock-alert p {
+    margin: 6px 0;
+}
+
 
 /* ADD STOCK FORM */
 
 .add-stock-form {
     display: grid;
+
     grid-template-columns: repeat(4, 1fr) auto;
+
     gap: 10px;
 
     margin-bottom: 20px;
@@ -141,6 +291,7 @@ body {
 
 .add-stock-form input {
     min-width: 0;
+
     padding: 10px;
 
     border: 2px solid #d86616;
@@ -151,6 +302,7 @@ body {
 
 .add-stock-form input:focus {
     outline: none;
+
     border-color: #176b3a;
 }
 
@@ -164,6 +316,7 @@ body {
     border-radius: 6px;
 
     font-family: Georgia, serif;
+
     cursor: pointer;
 }
 
@@ -171,7 +324,8 @@ body {
     background: #a94304;
 }
 
-/* TABLE */
+
+/* STOCK TABLE */
 
 .stock-table-box {
     overflow-x: auto;
@@ -184,6 +338,7 @@ body {
 
 table {
     width: 100%;
+
     border-collapse: collapse;
 }
 
@@ -194,7 +349,9 @@ th {
 th,
 td {
     padding: 12px 13px;
+
     text-align: left;
+    vertical-align: middle;
 
     border-bottom: 1px solid #eadbc8;
 }
@@ -207,10 +364,109 @@ tbody tr:hover {
     background: #fffaf0;
 }
 
+
+/* STOCK STATUS */
+
+.status {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 14px;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    white-space: nowrap;
+}
+
+
+/* IN STOCK */
+
+.in-stock {
+    background: #dbeadf;
+    color: #176b3a;
+}
+
+
+/* RUNNING LOW */
+
+.running-low {
+    background: #fff0c8;
+    color: #9d6905;
+}
+
+
+/* LOW STOCK ALERT */
+
+.low-stock {
+    background: #fbe1dd;
+    color: #b23f35;
+
+    border: 1px solid #b23f35;
+}
+
+
+/* OUT OF STOCK */
+
+.out-stock {
+    background: #e4e4e4;
+    color: #555;
+}
+
+
+/* REFILL STOCK */
+
+.refill-form {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    margin: 0;
+}
+
+.refill-form input {
+    width: 65px;
+
+    padding: 7px;
+
+    border: 2px solid #176b3a;
+    border-radius: 5px;
+
+    font-family: Georgia, serif;
+    text-align: center;
+}
+
+.refill-form input:focus {
+    outline: none;
+
+    border-color: #c95205;
+}
+
+.refill-button {
+    padding: 7px 11px;
+
+    background: #176b3a;
+    color: white;
+
+    border: 2px solid #0f4f2a;
+    border-radius: 5px;
+
+    font-family: Georgia, serif;
+
+    cursor: pointer;
+}
+
+.refill-button:hover {
+    background: #12552f;
+}
+
+
 /* DELETE BUTTON */
 
 .delete-button {
-    padding: 6px 11px;
+    padding: 7px 11px;
 
     background: #c1483e;
     color: white;
@@ -219,6 +475,7 @@ tbody tr:hover {
     border-radius: 5px;
 
     font-family: Georgia, serif;
+
     cursor: pointer;
 }
 
@@ -226,23 +483,55 @@ tbody tr:hover {
     background: #9f3028;
 }
 
+
 /* EMPTY MESSAGE */
 
 .empty-message {
     padding: 25px;
+
     text-align: center;
+
     color: #846852;
 }
 
+
 /* RESPONSIVE */
 
+@media (max-width: 1100px) {
+
+    .stock-summary {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .refill-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .refill-form input {
+        width: 100%;
+    }
+
+}
+
 @media (max-width: 900px) {
+
     .add-stock-form {
         grid-template-columns: repeat(2, 1fr);
     }
+
+}
+
+@media (max-width: 700px) {
+
+    .stock-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
 }
 
 @media (max-width: 600px) {
+
     .stock-container {
         display: block;
     }
@@ -254,4 +543,18 @@ tbody tr:hover {
     .add-stock-form {
         grid-template-columns: 1fr;
     }
+
+    .stock-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .stock-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stock-filters a {
+        text-align: center;
+    }
+
 }

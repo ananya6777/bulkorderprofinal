@@ -81,10 +81,145 @@
                 <h1>Stock</h1>
 
                 <p>
-                    Add and manage products available for customer orders.
+                    Add, refill and manage products available for customer orders.
                 </p>
 
             </div>
+
+
+            <!-- STOCK SUMMARY CARDS -->
+
+            <div class="stock-summary">
+
+                <a
+                    href="{{ url_for('stock', filter='all') }}"
+                    class="summary-card {% if stock_filter == 'all' %}selected-card{% endif %}">
+
+                    <p>Total Products</p>
+                    <h2>{{ total_products }}</h2>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('stock', filter='in') }}"
+                    class="summary-card {% if stock_filter == 'in' %}selected-card{% endif %}">
+
+                    <p>In Stock</p>
+                    <h2>{{ in_stock_count }}</h2>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('stock', filter='running') }}"
+                    class="summary-card running-card {% if stock_filter == 'running' %}selected-card{% endif %}">
+
+                    <p>Running Low</p>
+                    <h2>{{ running_low_count }}</h2>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('stock', filter='low') }}"
+                    class="summary-card low-card {% if stock_filter == 'low' %}selected-card{% endif %}">
+
+                    <p>Low Stock</p>
+                    <h2>{{ low_stock_count }}</h2>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('stock', filter='out') }}"
+                    class="summary-card out-card {% if stock_filter == 'out' %}selected-card{% endif %}">
+
+                    <p>Out of Stock</p>
+                    <h2>{{ out_of_stock_count }}</h2>
+
+                </a>
+
+            </div>
+
+
+            <!-- QUICK FILTER BUTTONS -->
+
+            <div class="stock-filters">
+
+                <span>
+                    Show:
+                </span>
+
+                <a
+                    href="{{ url_for('stock', filter='all') }}"
+                    class="{% if stock_filter == 'all' %}active-filter{% endif %}">
+                    All
+                </a>
+
+                <a
+                    href="{{ url_for('stock', filter='running') }}"
+                    class="{% if stock_filter == 'running' %}active-filter{% endif %}">
+                    Running Low
+                </a>
+
+                <a
+                    href="{{ url_for('stock', filter='low') }}"
+                    class="{% if stock_filter == 'low' %}active-filter{% endif %}">
+                    Low Stock
+                </a>
+
+                <a
+                    href="{{ url_for('stock', filter='out') }}"
+                    class="{% if stock_filter == 'out' %}active-filter{% endif %}">
+                    Out of Stock
+                </a>
+
+            </div>
+
+
+            <!-- LOW STOCK ALERTS -->
+
+            {% if low_stock_items %}
+
+            <div class="stock-alert">
+
+                <h3>
+                    ⚠ Stock Alerts
+                </h3>
+
+                {% for item in low_stock_items %}
+
+                <p>
+
+                    <strong>
+                        {{ item["item_name"] }}
+                    </strong>
+
+                    ({{ item["brand"] }})
+
+                    -
+
+                    {% if item["stock_quantity"] == 0 %}
+
+                        Out of Stock
+
+                    {% else %}
+
+                        Only {{ item["stock_quantity"] }} left
+
+                    {% endif %}
+
+                </p>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- ADD NEW STOCK ITEM -->
 
             <form
                 class="add-stock-form"
@@ -124,6 +259,9 @@
 
             </form>
 
+
+            <!-- STOCK TABLE -->
+
             <div class="stock-table-box">
 
                 <table>
@@ -134,8 +272,10 @@
                             <th>ID</th>
                             <th>Item</th>
                             <th>Brand</th>
-                            <th>Stock</th>
+                            <th>Current Stock</th>
+                            <th>Status</th>
                             <th>Price</th>
+                            <th>Refill Stock</th>
                             <th>Action</th>
                         </tr>
 
@@ -147,15 +287,87 @@
 
                         <tr>
 
-                            <td>#S{{ "%03d"|format(item["id"]) }}</td>
+                            <td>
+                                #S{{ "%03d"|format(item["id"]) }}
+                            </td>
 
-                            <td>{{ item["item_name"] }}</td>
+                            <td>
+                                {{ item["item_name"] }}
+                            </td>
 
-                            <td>{{ item["brand"] }}</td>
+                            <td>
+                                {{ item["brand"] }}
+                            </td>
 
-                            <td>{{ item["stock_quantity"] }}</td>
+                            <td>
+                                {{ item["stock_quantity"] }}
+                            </td>
 
-                            <td>${{ "%.2f"|format(item["price"]) }}</td>
+                            <td>
+
+                                {% if item["status"] == "In Stock" %}
+
+                                <span class="status in-stock">
+                                    In Stock
+                                </span>
+
+                                {% elif item["status"] == "Running Low" %}
+
+                                <span class="status running-low">
+                                    Running Low
+                                </span>
+
+                                {% elif item["status"] == "Low Stock Alert" %}
+
+                                <span class="status low-stock">
+                                    Low Stock Alert
+                                </span>
+
+                                {% else %}
+
+                                <span class="status out-stock">
+                                    Out of Stock
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                ${{ "%.2f"|format(item["price"]) }}
+                            </td>
+
+
+                            <!-- REFILL STOCK -->
+
+                            <td>
+
+                                <form
+                                    class="refill-form"
+                                    method="POST"
+                                    action="{{ url_for('refill_stock', stock_id=item['id']) }}">
+
+                                    <input
+                                        type="number"
+                                        name="refill_quantity"
+                                        min="1"
+                                        placeholder="Qty"
+                                        required>
+
+                                    <button
+                                        type="submit"
+                                        class="refill-button">
+
+                                        Refill
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+
+                            <!-- DELETE -->
 
                             <td>
 
@@ -181,8 +393,11 @@
 
                         <tr>
 
-                            <td colspan="6" class="empty-message">
-                                No stock items have been added yet.
+                            <td colspan="8"
+                                class="empty-message">
+
+                                No stock items match this filter.
+
                             </td>
 
                         </tr>
