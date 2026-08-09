@@ -1,0 +1,239 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    background: #f7f0e5;
+    color: #4b2b16;
+
+    font-family: Georgia, serif;
+}
+
+.customer-page {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+
+    padding: 40px 20px;
+}
+
+.customer-card {
+    width: 100%;
+    max-width: 900px;
+
+    background: #fffaf2;
+
+    border: 3px solid #4b2b16;
+    border-radius: 12px;
+
+    padding: 28px;
+}
+
+.customer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 20px;
+
+    margin-bottom: 10px;
+}
+
+.customer-top h1 {
+    margin: 0 0 5px;
+
+    color: #176b3a;
+}
+
+.customer-top h2 {
+    margin: 0;
+
+    color: #c94f00;
+}
+
+.customer-links {
+    display: flex;
+    gap: 10px;
+}
+
+.customer-links a {
+    padding: 8px 12px;
+
+    background: #176b3a;
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 6px;
+}
+
+.customer-links a:hover {
+    background: #12552f;
+}
+
+.welcome-message {
+    font-weight: bold;
+    color: #176b3a;
+}
+
+.error-message {
+    padding: 10px 12px;
+
+    background: #fbe1dd;
+    color: #a52f28;
+
+    border: 2px solid #c1483e;
+    border-radius: 6px;
+}
+
+form > label {
+    display: block;
+
+    margin-top: 18px;
+    margin-bottom: 6px;
+
+    font-weight: bold;
+}
+
+#pickup_date {
+    padding: 10px;
+
+    border: 2px solid #d86616;
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+}
+
+.product-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    margin-bottom: 14px;
+    padding: 16px;
+
+    background: white;
+
+    border: 1px solid #d8c5a7;
+    border-radius: 8px;
+}
+
+.product-details strong {
+    font-size: 18px;
+}
+
+.product-details p {
+    margin: 5px 0;
+}
+
+.product-price {
+    color: #c94f00;
+    font-weight: bold;
+}
+
+.customer-stock-status {
+    display: inline-block;
+
+    margin-top: 6px;
+    padding: 5px 9px;
+
+    border-radius: 14px;
+
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.available-stock {
+    background: #dbeadf;
+    color: #176b3a;
+}
+
+.out-of-stock {
+    background: #fbe1dd;
+    color: #b23f35;
+
+    border: 1px solid #b23f35;
+}
+
+.quantity-box {
+    min-width: 120px;
+}
+
+.quantity-box label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-weight: bold;
+}
+
+.quantity-box input {
+    width: 90px;
+
+    padding: 8px;
+
+    border: 2px solid #176b3a;
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+}
+
+.quantity-box input:disabled {
+    background: #e8e8e8;
+    border-color: #aaa;
+
+    cursor: not-allowed;
+}
+
+button[type="submit"] {
+    margin-top: 20px;
+    padding: 11px 18px;
+
+    background: #c95205;
+    color: #ffdd6f;
+
+    border: 2px solid #70310c;
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background: #a94304;
+}
+
+.no-stock-message {
+    padding: 20px;
+
+    text-align: center;
+
+    color: #846852;
+}
+
+@media (max-width: 700px) {
+    .customer-top {
+        flex-direction: column;
+    }
+
+    .customer-links {
+        width: 100%;
+    }
+
+    .product-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .quantity-box {
+        width: 100%;
+    }
+}

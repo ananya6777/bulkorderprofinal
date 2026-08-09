@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BulkOrder Pro - My Orders</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='customer_orders.css') }}">
+</head>
+
+<body>
+
+    <div class="orders-page">
+
+        <div class="orders-card">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>BulkOrder Pro</h1>
+                    <h2>My Orders</h2>
+                </div>
+
+                <div class="header-buttons">
+
+                    <a href="{{ url_for('customer_order_page') }}">
+                        Place New Order
+                    </a>
+
+                    <a href="{{ url_for('customer_logout') }}">
+                        Logout
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% if orders %}
+
+                {% for order in orders %}
+
+                <div class="order-card">
+
+                    <div class="order-top">
+
+                        <h3>
+                            Order #{{ order["id"] }}
+                        </h3>
+
+                        <span class="status">
+                            {{ order["order_status"] }}
+                        </span>
+
+                    </div>
+
+                    <p>
+                        <strong>Pickup Date:</strong>
+                        {{ order["pickup_date"] }}
+                    </p>
+
+                    <p>
+                        <strong>Payment Status:</strong>
+                        {{ order["payment_status"] }}
+                    </p>
+
+                    <p>
+                        <strong>Total Items:</strong>
+                        {{ order["items"] }}
+                    </p>
+
+                    <h4>Products Ordered</h4>
+
+                    {% for product in order["products"] %}
+
+                    <div class="product">
+
+                        <span>
+                            {{ product["item_name"] }}
+                            ({{ product["brand"] }})
+                        </span>
+
+                        <span>
+                            Qty: {{ product["quantity"] }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-orders">
+
+                    <h3>No Orders Yet</h3>
+
+                    <p>
+                        You haven't placed any orders yet.
+                    </p>
+
+                    <a href="{{ url_for('customer_order_page') }}">
+                        Place Your First Order
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

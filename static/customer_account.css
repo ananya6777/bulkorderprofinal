@@ -1,0 +1,108 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Georgia, serif;
+    background: #f7f0e5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.account-page {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.account-card {
+    width: 420px;
+    background: white;
+    border: 3px solid #5a2c14;
+    border-radius: 10px;
+    padding: 35px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+}
+
+.account-card h1 {
+    margin: 0;
+    color: #176b3a;
+    text-align: center;
+}
+
+.account-card h2 {
+    margin-top: 12px;
+    text-align: center;
+    color: #c94f00;
+}
+
+.account-card p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #d7c5a2;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #176b3a;
+}
+
+button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 14px;
+    background: #176b3a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #14552f;
+}
+
+.account-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.account-link a {
+    color: #c94f00;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.account-link a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    background: #ffe0e0;
+    color: #b22222;
+    border: 1px solid #b22222;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}

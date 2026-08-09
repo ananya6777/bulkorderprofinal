@@ -1,0 +1,148 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f7f0e5;
+    font-family: Georgia, serif;
+    color: #4b2b16;
+}
+
+.orders-page {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.orders-card {
+    width: 900px;
+    max-width: 100%;
+    background: white;
+    border: 3px solid #5a2c14;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0;
+    color: #176b3a;
+}
+
+.page-header h2 {
+    margin-top: 6px;
+    color: #c94f00;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.header-buttons a {
+    padding: 10px 16px;
+    background: #176b3a;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.header-buttons a:hover {
+    background: #14542f;
+}
+
+.order-card {
+    margin-bottom: 25px;
+    padding: 20px;
+    border: 2px solid #d8c39f;
+    border-radius: 8px;
+    background: #fff9ef;
+}
+
+.order-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.order-top h3 {
+    margin: 0;
+}
+
+.status {
+    background: #f8dfb3;
+    color: #5a2c14;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.order-card p {
+    margin: 8px 0;
+}
+
+.order-card h4 {
+    margin-top: 18px;
+    margin-bottom: 10px;
+}
+
+.product {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: white;
+    border: 1px solid #e4d2b8;
+    border-radius: 5px;
+}
+
+.empty-orders {
+    text-align: center;
+    padding: 50px;
+}
+
+.empty-orders a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 22px;
+    background: #176b3a;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.empty-orders a:hover {
+    background: #14542f;
+}
+
+@media (max-width: 700px) {
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .header-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .header-buttons a {
+        text-align: center;
+    }
+
+    .product {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
