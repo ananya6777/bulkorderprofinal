@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BulkOrder Pro</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='portal.css') }}">
+</head>
+
+<body>
+
+    <div class="portal-page">
+
+        <div class="portal-card">
+
+            <h1>BulkOrder Pro</h1>
+
+            <p>Select a portal to continue</p>
+
+            <div class="portal-options">
+
+                <a href="{{ url_for('customer_login_page') }}"
+                   class="portal-button">
+
+                    Customer Portal
+
+                </a>
+
+                <a href="{{ url_for('staff_login_page') }}"
+                   class="portal-button">
+
+                    Staff Portal
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

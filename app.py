@@ -63,7 +63,6 @@ USERS = {
 def get_database_connection():
 
     connection = sqlite3.connect(DATABASE)
-
     connection.row_factory = sqlite3.Row
 
     return connection
@@ -76,116 +75,82 @@ def get_database_connection():
 def create_database():
 
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
-    # ---------------- CUSTOMERS ----------------
+    # CUSTOMERS
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS customers (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             customer_name TEXT NOT NULL,
-
             phone TEXT NOT NULL,
-
             date_added TEXT DEFAULT CURRENT_DATE
-
         )
     """)
 
 
-    # ---------------- CUSTOMER ACCOUNTS ----------------
+    # CUSTOMER ACCOUNTS
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS customer_accounts (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             customer_id INTEGER NOT NULL UNIQUE,
-
             username TEXT NOT NULL UNIQUE,
-
             password_hash TEXT NOT NULL,
-
             FOREIGN KEY (customer_id)
             REFERENCES customers(id)
-
         )
     """)
 
 
-    # ---------------- STOCK ----------------
+    # STOCK
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS stock (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             item_name TEXT NOT NULL,
-
             brand TEXT NOT NULL,
-
             stock_quantity INTEGER NOT NULL,
-
             price REAL NOT NULL
-
         )
     """)
 
 
-    # ---------------- ORDERS ----------------
+    # ORDERS
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS orders (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             customer_id INTEGER NOT NULL,
-
             stock_id INTEGER,
-
             pickup_date TEXT NOT NULL,
-
             items INTEGER NOT NULL DEFAULT 0,
-
             payment_status TEXT NOT NULL,
-
             order_status TEXT NOT NULL,
-
             FOREIGN KEY (customer_id)
             REFERENCES customers(id)
-
         )
     """)
 
 
-    # ---------------- ORDER ITEMS ----------------
+    # ORDER ITEMS
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS order_items (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             order_id INTEGER NOT NULL,
-
             stock_id INTEGER NOT NULL,
-
             quantity INTEGER NOT NULL,
-
             FOREIGN KEY (order_id)
             REFERENCES orders(id),
-
             FOREIGN KEY (stock_id)
             REFERENCES stock(id)
-
         )
     """)
 
 
-    # Makes sure an older orders table has stock_id.
+    # Make sure older orders tables have stock_id
 
     cursor.execute("PRAGMA table_info(orders)")
 
@@ -193,7 +158,6 @@ def create_database():
         column[1]
         for column in cursor.fetchall()
     ]
-
 
     if "stock_id" not in order_columns:
 
@@ -204,7 +168,6 @@ def create_database():
 
 
     connection.commit()
-
     connection.close()
 
 
@@ -223,15 +186,25 @@ def customer_logged_in():
 
 
 # =========================================================
+# PORTAL HOMEPAGE
+# =========================================================
+
+@app.route("/")
+def home():
+
+    return render_template(
+        "portal.html"
+    )
+
+
+# =========================================================
 # CUSTOMER PRODUCT LIST
 # =========================================================
 
 def get_customer_products():
 
     connection = get_database_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute("""
         SELECT
@@ -244,45 +217,32 @@ def get_customer_products():
         ORDER BY item_name
     """)
 
-
     stock_records = cursor.fetchall()
 
     customer_products = []
 
-
     for item in stock_records:
-
-        # Customers DO NOT receive the exact stock quantity.
 
         if item["stock_quantity"] <= 0:
 
             customer_status = "Out of Stock"
-
             is_available = False
 
         else:
 
             customer_status = "Available"
-
             is_available = True
 
+        # Exact stock quantity is NOT sent to customers.
 
         customer_products.append({
-
             "id": item["id"],
-
             "item_name": item["item_name"],
-
             "brand": item["brand"],
-
             "price": item["price"],
-
             "customer_status": customer_status,
-
             "is_available": is_available
-
         })
-
 
     connection.close()
 
@@ -302,14 +262,13 @@ def customer_register_page():
             url_for("customer_order_page")
         )
 
-
     return render_template(
         "customer_register.html"
     )
 
 
 # =========================================================
-# REGISTER CUSTOMER ACCOUNT
+# REGISTER CUSTOMER
 # =========================================================
 
 @app.route(
@@ -338,7 +297,6 @@ def customer_register():
         ""
     )
 
-
     if not all([
         customer_name,
         phone,
@@ -347,20 +305,15 @@ def customer_register():
     ]):
 
         return render_template(
-
             "customer_register.html",
-
             error="Please complete every field."
-
         )
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
-    # Check if username already exists.
+    # Check username
 
     cursor.execute("""
         SELECT id
@@ -370,24 +323,19 @@ def customer_register():
         username,
     ))
 
-
     existing_username = cursor.fetchone()
-
 
     if existing_username:
 
         connection.close()
 
         return render_template(
-
             "customer_register.html",
-
             error="That username is already being used."
-
         )
 
 
-    # Check if the phone number is already in customers.
+    # Check phone number
 
     cursor.execute("""
         SELECT id
@@ -397,16 +345,12 @@ def customer_register():
         phone,
     ))
 
-
     existing_customer = cursor.fetchone()
 
 
     if existing_customer:
 
         customer_id = existing_customer["id"]
-
-
-        # Check if that customer already has an account.
 
         cursor.execute("""
             SELECT id
@@ -416,25 +360,19 @@ def customer_register():
             customer_id,
         ))
 
-
         existing_account = cursor.fetchone()
-
 
         if existing_account:
 
             connection.close()
 
             return render_template(
-
                 "customer_register.html",
-
                 error=(
                     "An account already exists "
                     "for this phone number."
                 )
-
             )
-
 
         cursor.execute("""
             UPDATE customers
@@ -444,7 +382,6 @@ def customer_register():
             customer_name,
             customer_id
         ))
-
 
     else:
 
@@ -459,14 +396,12 @@ def customer_register():
             phone
         ))
 
-
         customer_id = cursor.lastrowid
 
 
     password_hash = generate_password_hash(
         password
     )
-
 
     cursor.execute("""
         INSERT INTO customer_accounts (
@@ -481,11 +416,8 @@ def customer_register():
         password_hash
     ))
 
-
     connection.commit()
-
     connection.close()
-
 
     return redirect(
         url_for("customer_login_page")
@@ -504,7 +436,6 @@ def customer_login_page():
         return redirect(
             url_for("customer_order_page")
         )
-
 
     return render_template(
         "customer_login.html"
@@ -531,11 +462,8 @@ def customer_login():
         ""
     )
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute("""
         SELECT
@@ -544,11 +472,9 @@ def customer_login():
             customer_accounts.password_hash,
             customers.customer_name,
             customers.phone
-
         FROM customer_accounts
 
         JOIN customers
-
         ON customer_accounts.customer_id
         = customers.id
 
@@ -557,9 +483,7 @@ def customer_login():
         username,
     ))
 
-
     customer = cursor.fetchone()
-
 
     connection.close()
 
@@ -584,18 +508,14 @@ def customer_login():
             customer["customer_name"]
         )
 
-
         return redirect(
             url_for("customer_order_page")
         )
 
 
     return render_template(
-
         "customer_login.html",
-
         error="Invalid username or password."
-
     )
 
 
@@ -621,7 +541,6 @@ def customer_logout():
         None
     )
 
-
     return redirect(
         url_for("customer_login_page")
     )
@@ -640,42 +559,29 @@ def customer_order_page():
             url_for("customer_login_page")
         )
 
-
     products = get_customer_products()
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute("""
         SELECT
             customer_name,
             phone
-
         FROM customers
-
         WHERE id = ?
     """, (
         session["customer_id"],
     ))
 
-
     customer = cursor.fetchone()
-
 
     connection.close()
 
-
     return render_template(
-
         "customer_order.html",
-
         stock_items=products,
-
         customer=customer
-
     )
 
 
@@ -695,44 +601,29 @@ def submit_customer_order():
             url_for("customer_login_page")
         )
 
-
     customer_id = session["customer_id"]
-
 
     pickup_date = request.form.get(
         "pickup_date",
         ""
     )
 
-
     if not pickup_date:
 
         return render_template(
-
             "customer_order.html",
-
             stock_items=get_customer_products(),
-
             error="Please select a pickup date."
-
         )
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
-
-
-    # IMPORTANT:
-    # This query uses REAL stock quantities internally.
-    # Customers never see these numbers.
 
     cursor.execute("""
         SELECT *
         FROM stock
         ORDER BY item_name
     """)
-
 
     stock_items = cursor.fetchall()
 
@@ -741,18 +632,13 @@ def submit_customer_order():
 
     for item in stock_items:
 
-        # Cannot order products with zero stock.
-
         if item["stock_quantity"] <= 0:
-
             continue
-
 
         quantity_text = request.form.get(
             f"quantity_{item['id']}",
             "0"
         )
-
 
         try:
 
@@ -770,37 +656,24 @@ def submit_customer_order():
 
         if quantity > 0:
 
-            # Secretly check actual stock.
-
             if quantity > item["stock_quantity"]:
 
                 connection.close()
 
-
                 return render_template(
-
                     "customer_order.html",
-
-                    stock_items=(
-                        get_customer_products()
-                    ),
-
+                    stock_items=get_customer_products(),
                     error=(
                         f"The requested quantity for "
                         f"{item['item_name']} "
                         f"is unavailable. "
                         f"Please choose a smaller quantity."
                     )
-
                 )
 
-
             selected_items.append({
-
                 "stock_id": item["id"],
-
                 "quantity": quantity
-
             })
 
 
@@ -808,121 +681,78 @@ def submit_customer_order():
 
         connection.close()
 
-
         return render_template(
-
             "customer_order.html",
-
             stock_items=get_customer_products(),
-
             error=(
                 "Please enter a quantity "
                 "for at least one available product."
             )
-
         )
 
 
-    # ---------------- TOTAL ITEMS ----------------
-
     total_items = sum(
-
         item["quantity"]
-
         for item in selected_items
-
     )
 
 
-    # ---------------- CREATE ORDER ----------------
+    # Create order
 
     cursor.execute("""
         INSERT INTO orders (
-
             customer_id,
-
             stock_id,
-
             pickup_date,
-
             items,
-
             payment_status,
-
             order_status
-
         )
-
         VALUES (?, ?, ?, ?, ?, ?)
     """, (
-
         customer_id,
-
         None,
-
         pickup_date,
-
         total_items,
-
         "Unpaid",
-
         "Pending"
-
     ))
-
 
     order_id = cursor.lastrowid
 
 
-    # ---------------- SAVE PRODUCTS ----------------
+    # Save products
 
     for item in selected_items:
 
         cursor.execute("""
             INSERT INTO order_items (
-
                 order_id,
-
                 stock_id,
-
                 quantity
-
             )
-
             VALUES (?, ?, ?)
         """, (
-
             order_id,
-
             item["stock_id"],
-
             item["quantity"]
-
         ))
 
 
-        # Automatically reduce stock.
+        # Reduce stock automatically
 
         cursor.execute("""
             UPDATE stock
-
-            SET stock_quantity
-            = stock_quantity - ?
-
+            SET stock_quantity = stock_quantity - ?
             WHERE id = ?
         """, (
-
             item["quantity"],
-
             item["stock_id"]
-
         ))
 
 
     connection.commit()
-
     connection.close()
-
 
     return redirect(
         url_for("customer_my_orders")
@@ -942,11 +772,8 @@ def customer_my_orders():
             url_for("customer_login_page")
         )
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute("""
         SELECT
@@ -955,16 +782,12 @@ def customer_my_orders():
             items,
             payment_status,
             order_status
-
         FROM orders
-
         WHERE customer_id = ?
-
         ORDER BY id DESC
     """, (
         session["customer_id"],
     ))
-
 
     order_records = cursor.fetchall()
 
@@ -979,11 +802,9 @@ def customer_my_orders():
                 stock.brand,
                 stock.price,
                 order_items.quantity
-
             FROM order_items
 
             JOIN stock
-
             ON order_items.stock_id
             = stock.id
 
@@ -992,40 +813,23 @@ def customer_my_orders():
             order["id"],
         ))
 
-
         products = cursor.fetchall()
 
-
         customer_orders.append({
-
             "id": order["id"],
-
             "pickup_date": order["pickup_date"],
-
             "items": order["items"],
-
-            "payment_status": (
-                order["payment_status"]
-            ),
-
-            "order_status": (
-                order["order_status"]
-            ),
-
+            "payment_status": order["payment_status"],
+            "order_status": order["order_status"],
             "products": products
-
         })
 
 
     connection.close()
 
-
     return render_template(
-
         "customer_orders.html",
-
         orders=customer_orders
-
     )
 
 
@@ -1033,8 +837,8 @@ def customer_my_orders():
 # STAFF / MANAGER LOGIN PAGE
 # =========================================================
 
-@app.route("/")
-def login_page():
+@app.route("/staff-login")
+def staff_login_page():
 
     if user_logged_in():
 
@@ -1042,9 +846,8 @@ def login_page():
             url_for("dashboard")
         )
 
-
     return render_template(
-        "login.html"
+        "staff_login.html"
     )
 
 
@@ -1073,9 +876,7 @@ def login():
         ""
     )
 
-
     user = USERS.get(username)
-
 
     if (
         user
@@ -1084,9 +885,7 @@ def login():
     ):
 
         session["username"] = username
-
         session["role"] = role
-
 
         return redirect(
             url_for("dashboard")
@@ -1094,14 +893,11 @@ def login():
 
 
     return render_template(
-
-        "login.html",
-
+        "staff_login.html",
         error=(
             "Invalid username, "
             "password or role."
         )
-
     )
 
 
@@ -1115,12 +911,10 @@ def dashboard():
     if not user_logged_in():
 
         return redirect(
-            url_for("login_page")
+            url_for("staff_login_page")
         )
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
@@ -1129,9 +923,7 @@ def dashboard():
         FROM customers
     """)
 
-    total_customers = (
-        cursor.fetchone()[0]
-    )
+    total_customers = cursor.fetchone()[0]
 
 
     cursor.execute("""
@@ -1139,35 +931,25 @@ def dashboard():
         FROM orders
     """)
 
-    total_orders = (
-        cursor.fetchone()[0]
-    )
+    total_orders = cursor.fetchone()[0]
 
 
     cursor.execute("""
         SELECT COUNT(*)
-
         FROM orders
-
         WHERE order_status = 'Pending'
     """)
 
-    pending_orders = (
-        cursor.fetchone()[0]
-    )
+    pending_orders = cursor.fetchone()[0]
 
 
     cursor.execute("""
         SELECT COUNT(*)
-
         FROM orders
-
         WHERE payment_status = 'Unpaid'
     """)
 
-    unpaid_orders = (
-        cursor.fetchone()[0]
-    )
+    unpaid_orders = cursor.fetchone()[0]
 
 
     cursor.execute("""
@@ -1178,44 +960,29 @@ def dashboard():
             orders.items,
             orders.payment_status,
             orders.order_status
-
         FROM orders
 
         JOIN customers
-
         ON orders.customer_id
         = customers.id
 
         ORDER BY orders.id DESC
-
         LIMIT 5
     """)
 
-
     recent_orders = cursor.fetchall()
-
 
     connection.close()
 
-
     return render_template(
-
         "dashboard.html",
-
         username=session["username"],
-
         role=session["role"],
-
         total_customers=total_customers,
-
         total_orders=total_orders,
-
         pending_orders=pending_orders,
-
         unpaid_orders=unpaid_orders,
-
         recent_orders=recent_orders
-
     )
 
 
@@ -1229,18 +996,15 @@ def customers():
     if not user_logged_in():
 
         return redirect(
-            url_for("login_page")
+            url_for("staff_login_page")
         )
-
 
     search = request.args.get(
         "search",
         ""
     ).strip()
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
@@ -1252,36 +1016,23 @@ def customers():
                 customers.customer_name,
                 customers.phone,
                 customers.date_added,
-
-                COUNT(orders.id)
-                AS total_orders,
-
-                MAX(orders.pickup_date)
-                AS last_order
-
+                COUNT(orders.id) AS total_orders,
+                MAX(orders.pickup_date) AS last_order
             FROM customers
 
             LEFT JOIN orders
+            ON customers.id = orders.customer_id
 
-            ON customers.id
-            = orders.customer_id
-
-            WHERE
-                customers.customer_name LIKE ?
-
-                OR customers.phone LIKE ?
+            WHERE customers.customer_name LIKE ?
+               OR customers.phone LIKE ?
 
             GROUP BY customers.id
 
             ORDER BY customers.customer_name
         """, (
-
             f"%{search}%",
-
             f"%{search}%"
-
         ))
-
 
     else:
 
@@ -1291,19 +1042,12 @@ def customers():
                 customers.customer_name,
                 customers.phone,
                 customers.date_added,
-
-                COUNT(orders.id)
-                AS total_orders,
-
-                MAX(orders.pickup_date)
-                AS last_order
-
+                COUNT(orders.id) AS total_orders,
+                MAX(orders.pickup_date) AS last_order
             FROM customers
 
             LEFT JOIN orders
-
-            ON customers.id
-            = orders.customer_id
+            ON customers.id = orders.customer_id
 
             GROUP BY customers.id
 
@@ -1319,65 +1063,37 @@ def customers():
         FROM customers
     """)
 
-    total_customers = (
-        cursor.fetchone()[0]
-    )
+    total_customers = cursor.fetchone()[0]
 
 
     cursor.execute("""
-        SELECT COUNT(
-            DISTINCT customer_id
-        )
-
+        SELECT COUNT(DISTINCT customer_id)
         FROM orders
-
         WHERE order_status = 'Pending'
     """)
 
-    active_customers = (
-        cursor.fetchone()[0]
-    )
+    active_customers = cursor.fetchone()[0]
 
 
     cursor.execute("""
         SELECT COUNT(*)
-
         FROM customers
-
-        WHERE
-            strftime(
-                '%Y-%m',
-                date_added
-            )
-            =
-            strftime(
-                '%Y-%m',
-                'now'
-            )
+        WHERE strftime('%Y-%m', date_added)
+        = strftime('%Y-%m', 'now')
     """)
 
-    new_customers = (
-        cursor.fetchone()[0]
-    )
+    new_customers = cursor.fetchone()[0]
 
 
     connection.close()
 
-
     return render_template(
-
         "customers.html",
-
         customers=customer_records,
-
         total_customers=total_customers,
-
         active_customers=active_customers,
-
         new_customers=new_customers,
-
         search=search
-
     )
 
 
@@ -1394,25 +1110,20 @@ def delete_customer(customer_id):
     if not user_logged_in():
 
         return redirect(
-            url_for("login_page")
+            url_for("staff_login_page")
         )
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
     cursor.execute("""
         SELECT id
-
         FROM orders
-
         WHERE customer_id = ?
     """, (
         customer_id,
     ))
-
 
     customer_orders = cursor.fetchall()
 
@@ -1421,7 +1132,6 @@ def delete_customer(customer_id):
 
         cursor.execute("""
             DELETE FROM order_items
-
             WHERE order_id = ?
         """, (
             order["id"],
@@ -1430,7 +1140,6 @@ def delete_customer(customer_id):
 
     cursor.execute("""
         DELETE FROM customer_accounts
-
         WHERE customer_id = ?
     """, (
         customer_id,
@@ -1439,7 +1148,6 @@ def delete_customer(customer_id):
 
     cursor.execute("""
         DELETE FROM orders
-
         WHERE customer_id = ?
     """, (
         customer_id,
@@ -1448,7 +1156,6 @@ def delete_customer(customer_id):
 
     cursor.execute("""
         DELETE FROM customers
-
         WHERE id = ?
     """, (
         customer_id,
@@ -1456,9 +1163,7 @@ def delete_customer(customer_id):
 
 
     connection.commit()
-
     connection.close()
-
 
     return redirect(
         url_for("customers")
@@ -1475,9 +1180,8 @@ def orders():
     if not user_logged_in():
 
         return redirect(
-            url_for("login_page")
+            url_for("staff_login_page")
         )
-
 
     search = request.args.get(
         "search",
@@ -1496,7 +1200,6 @@ def orders():
 
 
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
@@ -1509,11 +1212,9 @@ def orders():
             orders.items,
             orders.payment_status,
             orders.order_status
-
         FROM orders
 
         JOIN customers
-
         ON orders.customer_id
         = customers.id
 
@@ -1529,7 +1230,6 @@ def orders():
         query += """
             AND (
                 customers.customer_name LIKE ?
-
                 OR customers.phone LIKE ?
             )
         """
@@ -1571,7 +1271,6 @@ def orders():
         values
     )
 
-
     order_records = cursor.fetchall()
 
     orders_with_items = []
@@ -1585,11 +1284,9 @@ def orders():
                 stock.brand,
                 stock.price,
                 order_items.quantity
-
             FROM order_items
 
             JOIN stock
-
             ON order_items.stock_id
             = stock.id
 
@@ -1598,18 +1295,14 @@ def orders():
             order["id"],
         ))
 
-
         products = cursor.fetchall()
 
 
         if products:
 
             total_items = sum(
-
                 product["quantity"]
-
                 for product in products
-
             )
 
         else:
@@ -1618,49 +1311,25 @@ def orders():
 
 
         orders_with_items.append({
-
             "id": order["id"],
-
-            "customer_name": (
-                order["customer_name"]
-            ),
-
+            "customer_name": order["customer_name"],
             "phone": order["phone"],
-
-            "pickup_date": (
-                order["pickup_date"]
-            ),
-
-            "payment_status": (
-                order["payment_status"]
-            ),
-
-            "order_status": (
-                order["order_status"]
-            ),
-
+            "pickup_date": order["pickup_date"],
+            "payment_status": order["payment_status"],
+            "order_status": order["order_status"],
             "products": products,
-
             "total_items": total_items
-
         })
 
 
     connection.close()
 
-
     return render_template(
-
         "orders.html",
-
         orders=orders_with_items,
-
         search=search,
-
         payment=payment,
-
         status=status
-
     )
 
 
@@ -1674,7 +1343,7 @@ def stock():
     if not user_logged_in():
 
         return redirect(
-            url_for("login_page")
+            url_for("staff_login_page")
         )
 
 
@@ -1683,39 +1352,28 @@ def stock():
         "all"
     )
 
-
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
     cursor.execute("""
         SELECT *
-
         FROM stock
-
         ORDER BY
             stock_quantity ASC,
             item_name ASC
     """)
 
-
     stock_records = cursor.fetchall()
 
 
     all_stock_items = []
-
     low_stock_items = []
 
-
     total_products = 0
-
     in_stock_count = 0
-
     running_low_count = 0
-
     low_stock_count = 0
-
     out_of_stock_count = 0
 
 
@@ -1729,55 +1387,39 @@ def stock():
         if quantity == 0:
 
             status = "Out of Stock"
-
             status_key = "out"
-
             out_of_stock_count += 1
 
 
         elif quantity < 5:
 
             status = "Low Stock Alert"
-
             status_key = "low"
-
             low_stock_count += 1
 
 
         elif quantity <= 10:
 
             status = "Running Low"
-
             status_key = "running"
-
             running_low_count += 1
 
 
         else:
 
             status = "In Stock"
-
             status_key = "in"
-
             in_stock_count += 1
 
 
         stock_item = {
-
             "id": item["id"],
-
             "item_name": item["item_name"],
-
             "brand": item["brand"],
-
             "stock_quantity": quantity,
-
             "price": item["price"],
-
             "status": status,
-
             "status_key": status_key
-
         }
 
 
@@ -1793,61 +1435,45 @@ def stock():
             )
 
 
-    # ---------------- FILTER ----------------
-
     if stock_filter == "in":
 
         stock_items = [
-
             item
             for item in all_stock_items
-
             if item["status_key"] == "in"
-
         ]
 
 
     elif stock_filter == "running":
 
         stock_items = [
-
             item
             for item in all_stock_items
-
-            if item["status_key"]
-            == "running"
-
+            if item["status_key"] == "running"
         ]
 
 
     elif stock_filter == "low":
 
         stock_items = [
-
             item
             for item in all_stock_items
-
             if item["status_key"] == "low"
-
         ]
 
 
     elif stock_filter == "out":
 
         stock_items = [
-
             item
             for item in all_stock_items
-
             if item["status_key"] == "out"
-
         ]
 
 
     else:
 
         stock_filter = "all"
-
         stock_items = all_stock_items
 
 
@@ -1855,25 +1481,15 @@ def stock():
 
 
     return render_template(
-
         "stock.html",
-
         stock_items=stock_items,
-
         low_stock_items=low_stock_items,
-
         stock_filter=stock_filter,
-
         total_products=total_products,
-
         in_stock_count=in_stock_count,
-
         running_low_count=running_low_count,
-
         low_stock_count=low_stock_count,
-
         out_of_stock_count=out_of_stock_count
-
     )
 
 
@@ -1890,7 +1506,7 @@ def add_stock():
     if not user_logged_in():
 
         return redirect(
-            url_for("login_page")
+            url_for("staff_login_page")
         )
 
 
@@ -1928,7 +1544,6 @@ def add_stock():
 
 
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
@@ -1939,23 +1554,16 @@ def add_stock():
             stock_quantity,
             price
         )
-
         VALUES (?, ?, ?, ?)
     """, (
-
         item_name,
-
         brand,
-
         stock_quantity,
-
         price
-
     ))
 
 
     connection.commit()
-
     connection.close()
 
 
@@ -1977,7 +1585,7 @@ def refill_stock(stock_id):
     if not user_logged_in():
 
         return redirect(
-            url_for("login_page")
+            url_for("staff_login_page")
         )
 
 
@@ -2008,28 +1616,21 @@ def refill_stock(stock_id):
 
 
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
     cursor.execute("""
         UPDATE stock
-
         SET stock_quantity
         = stock_quantity + ?
-
         WHERE id = ?
     """, (
-
         refill_quantity,
-
         stock_id
-
     ))
 
 
     connection.commit()
-
     connection.close()
 
 
@@ -2051,18 +1652,16 @@ def delete_stock(stock_id):
     if not user_logged_in():
 
         return redirect(
-            url_for("login_page")
+            url_for("staff_login_page")
         )
 
 
     connection = get_database_connection()
-
     cursor = connection.cursor()
 
 
     cursor.execute("""
         DELETE FROM stock
-
         WHERE id = ?
     """, (
         stock_id,
@@ -2070,7 +1669,6 @@ def delete_stock(stock_id):
 
 
     connection.commit()
-
     connection.close()
 
 
@@ -2098,7 +1696,7 @@ def logout():
 
 
     return redirect(
-        url_for("login_page")
+        url_for("staff_login_page")
     )
 
 
