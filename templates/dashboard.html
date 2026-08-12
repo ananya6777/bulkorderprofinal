@@ -13,6 +13,8 @@
 
 <body class="dashboard-page">
 
+    <!-- TOP BAR -->
+
     <div class="top-bar">
 
         <div class="circles">
@@ -27,7 +29,10 @@
 
     </div>
 
+
     <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
 
         <div class="sidebar">
 
@@ -52,14 +57,18 @@
                 Stock
             </a>
 
-
-            <a href="#">
+            <a href="{{ url_for('history') }}">
                 History
             </a>
 
-            <div class="bottom-links">
+            {% if session.get("role") == "manager" %}
+            <a href="{{ url_for('settings') }}">
+                Settings
+            </a>
 
-            
+{% endif %}
+
+            <div class="bottom-links">
 
                 <a href="{{ url_for('logout') }}">
                     Logout
@@ -69,121 +78,326 @@
 
         </div>
 
-        <div class="main-content">
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+            <!-- HEADER -->
 
             <div class="dashboard-header">
-                <h1>Dashboard Overview</h1>
+
+                <div>
+                    <h1>Dashboard Overview</h1>
+
+                    <p>
+                        Overview of current orders and stock.
+                    </p>
+                </div>
+
+                <div class="welcome-user">
+                    {{ role|title }}
+                </div>
+
             </div>
+
+
+            <!-- SUMMARY CARDS -->
 
             <div class="cards">
 
-                <div class="card">
+                <a href="{{ url_for('orders') }}"
+                   class="card">
+
                     <p>Total Orders</p>
-                    <h2>{{ total_orders }}</h2>
-                </div>
 
-                <div class="card pending-card">
-                    <p>Pending</p>
-                    <h2>{{ pending_orders }}</h2>
-                </div>
-
-                <div class="card">
-                    <p>Customers</p>
-                    <h2>{{ total_customers }}</h2>
-                </div>
-
-                <div class="card">
-                    <p>Unpaid</p>
-                    <h2 class="green-number">
-                        {{ unpaid_orders }}
+                    <h2>
+                        {{ total_orders }}
                     </h2>
+
+                </a>
+
+
+                <a href="{{ url_for('orders', status='Pending') }}"
+                   class="card pending-card">
+
+                    <p>Pending Orders</p>
+
+                    <h2>
+                        {{ pending_orders }}
+                    </h2>
+
+                </a>
+
+
+                <a href="{{ url_for('customers') }}"
+                   class="card">
+
+                    <p>Customers</p>
+
+                    <h2>
+                        {{ total_customers }}
+                    </h2>
+
+                </a>
+
+
+                <div class="card pickup-card">
+
+                    <p>Today's Pickups</p>
+
+                    <h2>
+                        {{ todays_pickups }}
+                    </h2>
+
                 </div>
 
             </div>
 
-            <div class="warning">
-                ⚠ {{ pending_orders }} orders pending confirmation
+
+            <!-- ACTION REQUIRED -->
+
+            {% if pending_orders > 0 or low_stock_count > 0 %}
+
+            <div class="action-box">
+
+                <h3>
+                    ⚠ Action Required
+                </h3>
+
+                {% if pending_orders > 0 %}
+
+                <p>
+                    {{ pending_orders }}
+                    order{% if pending_orders != 1 %}s{% endif %}
+                    waiting to be prepared.
+                </p>
+
+                {% endif %}
+
+
+                {% if low_stock_count > 0 %}
+
+                <p>
+                    {{ low_stock_count }}
+                    product{% if low_stock_count != 1 %}s{% endif %}
+                    require restocking.
+                </p>
+
+                {% endif %}
+
             </div>
 
-            <div class="table-box">
+            {% else %}
 
-                <table>
+            <div class="all-clear-box">
 
-                    <thead>
+                ✓ No urgent actions are currently required.
 
-                        <tr>
-                            <th>Customer</th>
-                            <th>Pickup Date</th>
-                            <th>Items</th>
-                            <th>Payment</th>
-                            <th>Status</th>
-                        </tr>
+            </div>
 
-                    </thead>
+            {% endif %}
 
-                    <tbody>
 
-                        {% for order in recent_orders %}
+            <!-- LOWER DASHBOARD -->
 
-                        <tr>
+            <div class="dashboard-grid">
 
-                            <td>
-                                {{ order["customer_name"] }}
-                            </td>
+                <!-- RECENT ORDERS -->
 
-                            <td>
-                                {{ order["pickup_date"] }}
-                            </td>
+                <div class="dashboard-section">
 
-                            <td>
-                                {{ order["items"] }}
-                            </td>
+                    <div class="section-header">
 
-                            <td class="{% if order['payment_status'] == 'Unpaid' %}unpaid{% endif %}">
-                                {{ order["payment_status"] }}
-                            </td>
+                        <h2>
+                            Recent Orders
+                        </h2>
 
-                            <td>
+                        <a href="{{ url_for('orders') }}">
+                            View All
+                        </a>
 
-                                {% if order["order_status"] == "Confirmed" %}
+                    </div>
 
-                                    <span class="confirmed">
-                                        Confirmed
-                                    </span>
 
-                                {% elif order["order_status"] == "Pending" %}
+                    <div class="table-box">
 
-                                    <span class="pending">
-                                        Pending
-                                    </span>
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Pickup Date</th>
+                                    <th>Items</th>
+                                    <th>Status</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for order in recent_orders %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ order["customer_name"] }}
+                                    </td>
+
+                                    <td>
+                                        {{ order["pickup_date"] }}
+                                    </td>
+
+                                    <td>
+                                        {{ order["items"] }}
+                                    </td>
+
+                                    <td>
+
+                                        {% if order["order_status"] == "Pending" %}
+
+                                        <span class="order-status pending">
+                                            Pending
+                                        </span>
+
+
+                                        {% elif order["order_status"] == "Preparing" %}
+
+                                        <span class="order-status preparing">
+                                            Preparing
+                                        </span>
+
+
+                                        {% elif order["order_status"] == "Ready for Pickup" %}
+
+                                        <span class="order-status ready">
+                                            Ready for Pickup
+                                        </span>
+
+
+                                        {% elif order["order_status"] == "Collected" %}
+
+                                        <span class="order-status collected">
+                                            Collected
+                                        </span>
+
+
+                                        {% elif order["order_status"] == "Cancelled" %}
+
+                                        <span class="order-status cancelled">
+                                            Cancelled
+                                        </span>
+
+
+                                        {% else %}
+
+                                        <span class="order-status">
+                                            {{ order["order_status"] }}
+                                        </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
 
                                 {% else %}
 
-                                    {{ order["order_status"] }}
+                                <tr>
 
-                                {% endif %}
+                                    <td colspan="4"
+                                        class="empty-message">
 
-                            </td>
+                                        No orders have been added yet.
 
-                        </tr>
+                                    </td>
 
-                        {% else %}
+                                </tr>
 
-                        <tr>
-                            <td colspan="5">
-                                No orders have been added yet.
-                            </td>
-                        </tr>
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STOCK ALERTS -->
+
+                <div class="stock-alert-panel">
+
+                    <div class="section-header">
+
+                        <h2>
+                            Stock Alerts
+                        </h2>
+
+                        <a href="{{ url_for('stock') }}">
+                            View Stock
+                        </a>
+
+                    </div>
+
+
+                    {% if stock_alerts %}
+
+                        {% for item in stock_alerts %}
+
+                        <div class="stock-alert-item">
+
+                            <div>
+
+                                <strong>
+                                    {{ item["item_name"] }}
+                                </strong>
+
+                                <p>
+                                    {{ item["brand"] }}
+                                </p>
+
+                            </div>
+
+
+                            {% if item["stock_quantity"] == 0 %}
+
+                            <span class="stock-badge out">
+                                Out of Stock
+                            </span>
+
+                            {% else %}
+
+                            <span class="stock-badge low">
+                                {{ item["stock_quantity"] }} left
+                            </span>
+
+                            {% endif %}
+
+                        </div>
 
                         {% endfor %}
 
-                    </tbody>
 
-                </table>
+                    {% else %}
+
+                    <div class="no-alerts">
+
+                        ✓ Stock levels are currently okay.
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
 
             </div>
 
-        </div>
+        </main>
 
     </div>
 

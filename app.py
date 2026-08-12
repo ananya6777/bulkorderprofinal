@@ -63,6 +63,7 @@ USERS = {
 def get_database_connection():
 
     connection = sqlite3.connect(DATABASE)
+
     connection.row_factory = sqlite3.Row
 
     return connection
@@ -78,7 +79,7 @@ def create_database():
     cursor = connection.cursor()
 
 
-    # CUSTOMERS
+    # ---------------- CUSTOMERS ----------------
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS customers (
@@ -90,7 +91,7 @@ def create_database():
     """)
 
 
-    # CUSTOMER ACCOUNTS
+    # ---------------- CUSTOMER ACCOUNTS ----------------
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS customer_accounts (
@@ -98,13 +99,14 @@ def create_database():
             customer_id INTEGER NOT NULL UNIQUE,
             username TEXT NOT NULL UNIQUE,
             password_hash TEXT NOT NULL,
+
             FOREIGN KEY (customer_id)
             REFERENCES customers(id)
         )
     """)
 
 
-    # STOCK
+    # ---------------- STOCK ----------------
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS stock (
@@ -112,12 +114,31 @@ def create_database():
             item_name TEXT NOT NULL,
             brand TEXT NOT NULL,
             stock_quantity INTEGER NOT NULL,
-            price REAL NOT NULL
+            price REAL NOT NULL,
+            is_deleted INTEGER NOT NULL DEFAULT 0
         )
     """)
 
 
-    # ORDERS
+    # If the existing database was created before
+    # is_deleted was added, add it now.
+
+    cursor.execute("PRAGMA table_info(stock)")
+
+    stock_columns = [
+        column[1]
+        for column in cursor.fetchall()
+    ]
+
+    if "is_deleted" not in stock_columns:
+
+        cursor.execute("""
+            ALTER TABLE stock
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """)
+
+
+    # ---------------- ORDERS ----------------
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS orders (
@@ -128,13 +149,14 @@ def create_database():
             items INTEGER NOT NULL DEFAULT 0,
             payment_status TEXT NOT NULL,
             order_status TEXT NOT NULL,
+
             FOREIGN KEY (customer_id)
             REFERENCES customers(id)
         )
     """)
 
 
-    # ORDER ITEMS
+    # ---------------- ORDER ITEMS ----------------
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS order_items (
@@ -142,15 +164,17 @@ def create_database():
             order_id INTEGER NOT NULL,
             stock_id INTEGER NOT NULL,
             quantity INTEGER NOT NULL,
+
             FOREIGN KEY (order_id)
             REFERENCES orders(id),
+
             FOREIGN KEY (stock_id)
             REFERENCES stock(id)
         )
     """)
 
 
-    # Make sure older orders tables have stock_id
+    # Make sure older orders tables have stock_id.
 
     cursor.execute("PRAGMA table_info(orders)")
 
@@ -167,9 +191,166 @@ def create_database():
         """)
 
 
+    # ---------------- HISTORY ----------------
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            date_time TEXT
+            DEFAULT (datetime('now', 'localtime')),
+
+            user TEXT NOT NULL,
+
+            role TEXT NOT NULL,
+
+            category TEXT NOT NULL,
+
+            activity TEXT NOT NULL,
+
+            action_type TEXT,
+
+            stock_id INTEGER,
+
+            order_id INTEGER,
+
+            previous_status TEXT,
+
+            new_status TEXT,
+
+            is_used INTEGER NOT NULL DEFAULT 0
+        )
+    """)
+
+    # ---------------- SETTINGS ----------------
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
+            id INTEGER PRIMARY KEY,
+            business_name TEXT NOT NULL,
+            store_phone TEXT,
+            store_email TEXT,
+            pickup_address TEXT,
+            weekday_hours TEXT,
+            saturday_hours TEXT,
+            sunday_hours TEXT,
+            theme TEXT NOT NULL DEFAULT 'light'
+        )
+    """)
+
+
+    # Create the default settings the first time
+    # the program runs.
+
+    # Settings
+
+    cursor.execute("""
+        SELECT id
+        FROM settings
+        WHERE id = 1
+    """)
+
+    existing_settings = cursor.fetchone()
+
+
+    if not existing_settings:
+
+        cursor.execute("""
+            INSERT INTO settings (
+                id,
+                business_name,
+                store_phone,
+                store_email,
+                pickup_address,
+                weekday_hours,
+                saturday_hours,
+                sunday_hours,
+                theme
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            1,
+            "BulkOrder Pro",
+            "",
+            "",
+            "",
+            "9:00 AM - 6:00 PM",
+            "9:00 AM - 3:00 PM",
+            "Closed",
+            "light"
+        ))
+
     connection.commit()
     connection.close()
 
+
+# =========================================================
+# HISTORY HELPER
+# =========================================================
+
+def add_history(
+    connection,
+    user,
+    role,
+    category,
+    activity,
+    action_type=None,
+    stock_id=None,
+    order_id=None,
+    previous_status=None,
+    new_status=None
+):
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO history (
+            user,
+            role,
+            category,
+            activity,
+            action_type,
+            stock_id,
+            order_id,
+            previous_status,
+            new_status
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        user,
+        role,
+        category,
+        activity,
+        action_type,
+        stock_id,
+        order_id,
+        previous_status,
+        new_status
+    ))
+
+# =========================================================
+# GET SETTINGS
+# =========================================================
+
+def get_settings():
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+
+    cursor.execute("""
+        SELECT *
+        FROM settings
+        WHERE id = 1
+    """)
+
+
+    settings = cursor.fetchone()
+
+
+    connection.close()
+
+    return settings
 
 # =========================================================
 # LOGIN CHECKS
@@ -213,13 +394,18 @@ def get_customer_products():
             brand,
             stock_quantity,
             price
+
         FROM stock
+
+        WHERE is_deleted = 0
+
         ORDER BY item_name
     """)
 
     stock_records = cursor.fetchall()
 
     customer_products = []
+
 
     for item in stock_records:
 
@@ -233,20 +419,60 @@ def get_customer_products():
             customer_status = "Available"
             is_available = True
 
-        # Exact stock quantity is NOT sent to customers.
 
         customer_products.append({
+
             "id": item["id"],
+
             "item_name": item["item_name"],
+
             "brand": item["brand"],
+
             "price": item["price"],
+
             "customer_status": customer_status,
+
             "is_available": is_available
+
         })
+
 
     connection.close()
 
     return customer_products
+
+
+# =========================================================
+# GET LOGGED IN CUSTOMER
+# =========================================================
+
+def get_logged_in_customer():
+
+    if not customer_logged_in():
+
+        return None
+
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            customer_name,
+            phone
+
+        FROM customers
+
+        WHERE id = ?
+    """, (
+        session["customer_id"],
+    ))
+
+    customer = cursor.fetchone()
+
+    connection.close()
+
+    return customer
 
 
 # =========================================================
@@ -261,6 +487,7 @@ def customer_register_page():
         return redirect(
             url_for("customer_order_page")
         )
+
 
     return render_template(
         "customer_register.html"
@@ -297,6 +524,7 @@ def customer_register():
         ""
     )
 
+
     if not all([
         customer_name,
         phone,
@@ -308,6 +536,7 @@ def customer_register():
             "customer_register.html",
             error="Please complete every field."
         )
+
 
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -325,6 +554,7 @@ def customer_register():
 
     existing_username = cursor.fetchone()
 
+
     if existing_username:
 
         connection.close()
@@ -335,7 +565,7 @@ def customer_register():
         )
 
 
-    # Check phone number
+    # Check phone
 
     cursor.execute("""
         SELECT id
@@ -362,6 +592,7 @@ def customer_register():
 
         existing_account = cursor.fetchone()
 
+
         if existing_account:
 
             connection.close()
@@ -374,6 +605,7 @@ def customer_register():
                 )
             )
 
+
         cursor.execute("""
             UPDATE customers
             SET customer_name = ?
@@ -382,6 +614,7 @@ def customer_register():
             customer_name,
             customer_id
         ))
+
 
     else:
 
@@ -403,6 +636,7 @@ def customer_register():
         password
     )
 
+
     cursor.execute("""
         INSERT INTO customer_accounts (
             customer_id,
@@ -416,8 +650,21 @@ def customer_register():
         password_hash
     ))
 
+
+    # Record customer registration
+
+    add_history(
+        connection,
+        username,
+        "Customer",
+        "Customers",
+        f'Customer account registered for "{customer_name}".'
+    )
+
+
     connection.commit()
     connection.close()
+
 
     return redirect(
         url_for("customer_login_page")
@@ -436,6 +683,7 @@ def customer_login_page():
         return redirect(
             url_for("customer_order_page")
         )
+
 
     return render_template(
         "customer_login.html"
@@ -462,8 +710,10 @@ def customer_login():
         ""
     )
 
+
     connection = get_database_connection()
     cursor = connection.cursor()
+
 
     cursor.execute("""
         SELECT
@@ -472,9 +722,11 @@ def customer_login():
             customer_accounts.password_hash,
             customers.customer_name,
             customers.phone
+
         FROM customer_accounts
 
         JOIN customers
+
         ON customer_accounts.customer_id
         = customers.id
 
@@ -483,9 +735,8 @@ def customer_login():
         username,
     ))
 
-    customer = cursor.fetchone()
 
-    connection.close()
+    customer = cursor.fetchone()
 
 
     if (
@@ -508,9 +759,26 @@ def customer_login():
             customer["customer_name"]
         )
 
+
+        add_history(
+            connection,
+            customer["username"],
+            "Customer",
+            "Login",
+            "Customer logged in."
+        )
+
+
+        connection.commit()
+        connection.close()
+
+
         return redirect(
             url_for("customer_order_page")
         )
+
+
+    connection.close()
 
 
     return render_template(
@@ -541,6 +809,7 @@ def customer_logout():
         None
     )
 
+
     return redirect(
         url_for("customer_login_page")
     )
@@ -559,24 +828,11 @@ def customer_order_page():
             url_for("customer_login_page")
         )
 
+
     products = get_customer_products()
 
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    customer = get_logged_in_customer()
 
-    cursor.execute("""
-        SELECT
-            customer_name,
-            phone
-        FROM customers
-        WHERE id = ?
-    """, (
-        session["customer_id"],
-    ))
-
-    customer = cursor.fetchone()
-
-    connection.close()
 
     return render_template(
         "customer_order.html",
@@ -601,6 +857,7 @@ def submit_customer_order():
             url_for("customer_login_page")
         )
 
+
     customer_id = session["customer_id"]
 
     pickup_date = request.form.get(
@@ -608,22 +865,30 @@ def submit_customer_order():
         ""
     )
 
+
     if not pickup_date:
 
         return render_template(
             "customer_order.html",
             stock_items=get_customer_products(),
+            customer=get_logged_in_customer(),
             error="Please select a pickup date."
         )
+
 
     connection = get_database_connection()
     cursor = connection.cursor()
 
+
     cursor.execute("""
         SELECT *
         FROM stock
+
+        WHERE is_deleted = 0
+
         ORDER BY item_name
     """)
+
 
     stock_items = cursor.fetchall()
 
@@ -633,12 +898,15 @@ def submit_customer_order():
     for item in stock_items:
 
         if item["stock_quantity"] <= 0:
+
             continue
+
 
         quantity_text = request.form.get(
             f"quantity_{item['id']}",
             "0"
         )
+
 
         try:
 
@@ -663,6 +931,7 @@ def submit_customer_order():
                 return render_template(
                     "customer_order.html",
                     stock_items=get_customer_products(),
+                    customer=get_logged_in_customer(),
                     error=(
                         f"The requested quantity for "
                         f"{item['item_name']} "
@@ -670,6 +939,7 @@ def submit_customer_order():
                         f"Please choose a smaller quantity."
                     )
                 )
+
 
             selected_items.append({
                 "stock_id": item["id"],
@@ -684,6 +954,7 @@ def submit_customer_order():
         return render_template(
             "customer_order.html",
             stock_items=get_customer_products(),
+            customer=get_logged_in_customer(),
             error=(
                 "Please enter a quantity "
                 "for at least one available product."
@@ -718,6 +989,7 @@ def submit_customer_order():
         "Pending"
     ))
 
+
     order_id = cursor.lastrowid
 
 
@@ -751,8 +1023,21 @@ def submit_customer_order():
         ))
 
 
+    # Record order in history
+
+    add_history(
+        connection,
+        session["customer_username"],
+        "Customer",
+        "Orders",
+        f"Placed Order #{order_id} with {total_items} item(s).",
+        order_id=order_id
+    )
+
+
     connection.commit()
     connection.close()
+
 
     return redirect(
         url_for("customer_my_orders")
@@ -772,8 +1057,10 @@ def customer_my_orders():
             url_for("customer_login_page")
         )
 
+
     connection = get_database_connection()
     cursor = connection.cursor()
+
 
     cursor.execute("""
         SELECT
@@ -782,12 +1069,16 @@ def customer_my_orders():
             items,
             payment_status,
             order_status
+
         FROM orders
+
         WHERE customer_id = ?
+
         ORDER BY id DESC
     """, (
         session["customer_id"],
     ))
+
 
     order_records = cursor.fetchall()
 
@@ -802,9 +1093,11 @@ def customer_my_orders():
                 stock.brand,
                 stock.price,
                 order_items.quantity
+
             FROM order_items
 
             JOIN stock
+
             ON order_items.stock_id
             = stock.id
 
@@ -813,19 +1106,29 @@ def customer_my_orders():
             order["id"],
         ))
 
+
         products = cursor.fetchall()
 
+
         customer_orders.append({
+
             "id": order["id"],
+
             "pickup_date": order["pickup_date"],
+
             "items": order["items"],
+
             "payment_status": order["payment_status"],
+
             "order_status": order["order_status"],
+
             "products": products
+
         })
 
 
     connection.close()
+
 
     return render_template(
         "customer_orders.html",
@@ -845,6 +1148,7 @@ def staff_login_page():
         return redirect(
             url_for("dashboard")
         )
+
 
     return render_template(
         "staff_login.html"
@@ -876,7 +1180,9 @@ def login():
         ""
     )
 
+
     user = USERS.get(username)
+
 
     if (
         user
@@ -886,6 +1192,23 @@ def login():
 
         session["username"] = username
         session["role"] = role
+
+
+        connection = get_database_connection()
+
+
+        add_history(
+            connection,
+            username,
+            role.title(),
+            "Login",
+            f"{role.title()} logged in."
+        )
+
+
+        connection.commit()
+        connection.close()
+
 
         return redirect(
             url_for("dashboard")
@@ -914,9 +1237,12 @@ def dashboard():
             url_for("staff_login_page")
         )
 
+
     connection = get_database_connection()
     cursor = connection.cursor()
 
+
+    # ---------------- TOTAL CUSTOMERS ----------------
 
     cursor.execute("""
         SELECT COUNT(*)
@@ -926,6 +1252,8 @@ def dashboard():
     total_customers = cursor.fetchone()[0]
 
 
+    # ---------------- TOTAL ORDERS ----------------
+
     cursor.execute("""
         SELECT COUNT(*)
         FROM orders
@@ -933,6 +1261,8 @@ def dashboard():
 
     total_orders = cursor.fetchone()[0]
 
+
+    # ---------------- PENDING ORDERS ----------------
 
     cursor.execute("""
         SELECT COUNT(*)
@@ -943,14 +1273,60 @@ def dashboard():
     pending_orders = cursor.fetchone()[0]
 
 
+    # ---------------- TODAY'S PICKUPS ----------------
+
     cursor.execute("""
         SELECT COUNT(*)
         FROM orders
-        WHERE payment_status = 'Unpaid'
+        WHERE pickup_date = date('now', 'localtime')
+          AND order_status != 'Cancelled'
     """)
 
-    unpaid_orders = cursor.fetchone()[0]
+    todays_pickups = cursor.fetchone()[0]
 
+
+    # ---------------- LOW STOCK COUNT ----------------
+    #
+    # Low stock means fewer than 5 items.
+    # Deleted products are ignored.
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM stock
+        WHERE stock_quantity < 5
+          AND is_deleted = 0
+    """)
+
+    low_stock_count = cursor.fetchone()[0]
+
+
+    # ---------------- STOCK ALERTS ----------------
+    #
+    # Show the 5 products that need attention most.
+
+    cursor.execute("""
+        SELECT
+            id,
+            item_name,
+            brand,
+            stock_quantity
+
+        FROM stock
+
+        WHERE stock_quantity < 5
+          AND is_deleted = 0
+
+        ORDER BY
+            stock_quantity ASC,
+            item_name ASC
+
+        LIMIT 5
+    """)
+
+    stock_alerts = cursor.fetchall()
+
+
+    # ---------------- RECENT ORDERS ----------------
 
     cursor.execute("""
         SELECT
@@ -958,33 +1334,41 @@ def dashboard():
             customers.customer_name,
             orders.pickup_date,
             orders.items,
-            orders.payment_status,
             orders.order_status
+
         FROM orders
 
         JOIN customers
-        ON orders.customer_id
-        = customers.id
+        ON orders.customer_id = customers.id
 
         ORDER BY orders.id DESC
+
         LIMIT 5
     """)
 
     recent_orders = cursor.fetchall()
 
+
     connection.close()
+
 
     return render_template(
         "dashboard.html",
+
         username=session["username"],
         role=session["role"],
+
         total_customers=total_customers,
         total_orders=total_orders,
         pending_orders=pending_orders,
-        unpaid_orders=unpaid_orders,
+
+        todays_pickups=todays_pickups,
+
+        low_stock_count=low_stock_count,
+        stock_alerts=stock_alerts,
+
         recent_orders=recent_orders
     )
-
 
 # =========================================================
 # CUSTOMERS
@@ -999,10 +1383,12 @@ def customers():
             url_for("staff_login_page")
         )
 
+
     search = request.args.get(
         "search",
         ""
     ).strip()
+
 
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -1018,9 +1404,11 @@ def customers():
                 customers.date_added,
                 COUNT(orders.id) AS total_orders,
                 MAX(orders.pickup_date) AS last_order
+
             FROM customers
 
             LEFT JOIN orders
+
             ON customers.id = orders.customer_id
 
             WHERE customers.customer_name LIKE ?
@@ -1034,6 +1422,7 @@ def customers():
             f"%{search}%"
         ))
 
+
     else:
 
         cursor.execute("""
@@ -1044,9 +1433,11 @@ def customers():
                 customers.date_added,
                 COUNT(orders.id) AS total_orders,
                 MAX(orders.pickup_date) AS last_order
+
             FROM customers
 
             LEFT JOIN orders
+
             ON customers.id = orders.customer_id
 
             GROUP BY customers.id
@@ -1077,7 +1468,9 @@ def customers():
 
     cursor.execute("""
         SELECT COUNT(*)
+
         FROM customers
+
         WHERE strftime('%Y-%m', date_added)
         = strftime('%Y-%m', 'now')
     """)
@@ -1086,6 +1479,7 @@ def customers():
 
 
     connection.close()
+
 
     return render_template(
         "customers.html",
@@ -1113,8 +1507,21 @@ def delete_customer(customer_id):
             url_for("staff_login_page")
         )
 
+
     connection = get_database_connection()
     cursor = connection.cursor()
+
+
+    cursor.execute("""
+        SELECT customer_name
+        FROM customers
+        WHERE id = ?
+    """, (
+        customer_id,
+    ))
+
+
+    customer_record = cursor.fetchone()
 
 
     cursor.execute("""
@@ -1124,6 +1531,7 @@ def delete_customer(customer_id):
     """, (
         customer_id,
     ))
+
 
     customer_orders = cursor.fetchall()
 
@@ -1162,8 +1570,23 @@ def delete_customer(customer_id):
     ))
 
 
+    if customer_record:
+
+        add_history(
+            connection,
+            session["username"],
+            session["role"].title(),
+            "Customers",
+            (
+                f'Deleted customer '
+                f'"{customer_record["customer_name"]}".'
+            )
+        )
+
+
     connection.commit()
     connection.close()
+
 
     return redirect(
         url_for("customers")
@@ -1182,6 +1605,7 @@ def orders():
         return redirect(
             url_for("staff_login_page")
         )
+
 
     search = request.args.get(
         "search",
@@ -1212,9 +1636,11 @@ def orders():
             orders.items,
             orders.payment_status,
             orders.order_status
+
         FROM orders
 
         JOIN customers
+
         ON orders.customer_id
         = customers.id
 
@@ -1271,6 +1697,7 @@ def orders():
         values
     )
 
+
     order_records = cursor.fetchall()
 
     orders_with_items = []
@@ -1284,9 +1711,11 @@ def orders():
                 stock.brand,
                 stock.price,
                 order_items.quantity
+
             FROM order_items
 
             JOIN stock
+
             ON order_items.stock_id
             = stock.id
 
@@ -1294,6 +1723,7 @@ def orders():
         """, (
             order["id"],
         ))
+
 
         products = cursor.fetchall()
 
@@ -1311,18 +1741,28 @@ def orders():
 
 
         orders_with_items.append({
+
             "id": order["id"],
+
             "customer_name": order["customer_name"],
+
             "phone": order["phone"],
+
             "pickup_date": order["pickup_date"],
+
             "payment_status": order["payment_status"],
+
             "order_status": order["order_status"],
+
             "products": products,
+
             "total_items": total_items
+
         })
 
 
     connection.close()
+
 
     return render_template(
         "orders.html",
@@ -1330,6 +1770,119 @@ def orders():
         search=search,
         payment=payment,
         status=status
+    )
+
+
+
+# =========================================================
+# UPDATE ORDER STATUS
+# =========================================================
+
+@app.route(
+    "/orders/status/<int:order_id>",
+    methods=["POST"]
+)
+def update_order_status(order_id):
+
+    if not user_logged_in():
+
+        return redirect(
+            url_for("staff_login_page")
+        )
+
+
+    new_status = request.form.get(
+        "order_status",
+        ""
+    ).strip()
+
+
+    allowed_statuses = [
+        "Pending",
+        "Preparing",
+        "Ready for Pickup",
+        "Collected",
+        "Cancelled"
+    ]
+
+
+    if new_status not in allowed_statuses:
+
+        return redirect(
+            url_for("orders")
+        )
+
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+
+    cursor.execute("""
+        SELECT order_status
+        FROM orders
+        WHERE id = ?
+    """, (
+        order_id,
+    ))
+
+
+    order = cursor.fetchone()
+
+
+    if not order:
+
+        connection.close()
+
+        return redirect(
+            url_for("orders")
+        )
+
+
+    previous_status = order["order_status"]
+
+
+    if previous_status == new_status:
+
+        connection.close()
+
+        return redirect(
+            url_for("orders")
+        )
+
+
+    cursor.execute("""
+        UPDATE orders
+        SET order_status = ?
+        WHERE id = ?
+    """, (
+        new_status,
+        order_id
+    ))
+
+
+    add_history(
+        connection,
+        session["username"],
+        session["role"].title(),
+        "Orders",
+        (
+            f'Changed Order #{order_id} '
+            f'from "{previous_status}" '
+            f'to "{new_status}".'
+        ),
+        action_type="revert_order",
+        order_id=order_id,
+        previous_status=previous_status,
+        new_status=new_status
+    )
+
+
+    connection.commit()
+    connection.close()
+
+
+    return redirect(
+        url_for("orders")
     )
 
 
@@ -1352,6 +1905,7 @@ def stock():
         "all"
     )
 
+
     connection = get_database_connection()
     cursor = connection.cursor()
 
@@ -1359,16 +1913,21 @@ def stock():
     cursor.execute("""
         SELECT *
         FROM stock
+
+        WHERE is_deleted = 0
+
         ORDER BY
             stock_quantity ASC,
             item_name ASC
     """)
+
 
     stock_records = cursor.fetchall()
 
 
     all_stock_items = []
     low_stock_items = []
+
 
     total_products = 0
     in_stock_count = 0
@@ -1388,6 +1947,7 @@ def stock():
 
             status = "Out of Stock"
             status_key = "out"
+
             out_of_stock_count += 1
 
 
@@ -1395,6 +1955,7 @@ def stock():
 
             status = "Low Stock Alert"
             status_key = "low"
+
             low_stock_count += 1
 
 
@@ -1402,6 +1963,7 @@ def stock():
 
             status = "Running Low"
             status_key = "running"
+
             running_low_count += 1
 
 
@@ -1409,17 +1971,26 @@ def stock():
 
             status = "In Stock"
             status_key = "in"
+
             in_stock_count += 1
 
 
         stock_item = {
+
             "id": item["id"],
+
             "item_name": item["item_name"],
+
             "brand": item["brand"],
+
             "stock_quantity": quantity,
+
             "price": item["price"],
+
             "status": status,
+
             "status_key": status_key
+
         }
 
 
@@ -1552,15 +2123,32 @@ def add_stock():
             item_name,
             brand,
             stock_quantity,
-            price
+            price,
+            is_deleted
         )
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, 0)
     """, (
         item_name,
         brand,
         stock_quantity,
         price
     ))
+
+
+    stock_id = cursor.lastrowid
+
+
+    add_history(
+        connection,
+        session["username"],
+        session["role"].title(),
+        "Stock",
+        (
+            f'Added stock item "{item_name}" '
+            f'({brand}) with {stock_quantity} units.'
+        ),
+        stock_id=stock_id
+    )
 
 
     connection.commit()
@@ -1620,14 +2208,65 @@ def refill_stock(stock_id):
 
 
     cursor.execute("""
+        SELECT
+            item_name,
+            brand,
+            stock_quantity
+
+        FROM stock
+
+        WHERE id = ?
+          AND is_deleted = 0
+    """, (
+        stock_id,
+    ))
+
+
+    stock_item = cursor.fetchone()
+
+
+    if not stock_item:
+
+        connection.close()
+
+        return redirect(
+            url_for("stock")
+        )
+
+
+    old_quantity = stock_item["stock_quantity"]
+
+
+    cursor.execute("""
         UPDATE stock
+
         SET stock_quantity
         = stock_quantity + ?
+
         WHERE id = ?
     """, (
         refill_quantity,
         stock_id
     ))
+
+
+    new_quantity = (
+        old_quantity + refill_quantity
+    )
+
+
+    add_history(
+        connection,
+        session["username"],
+        session["role"].title(),
+        "Stock",
+        (
+            f'Refilled "{stock_item["item_name"]}" '
+            f'by {refill_quantity} units '
+            f'({old_quantity} → {new_quantity}).'
+        ),
+        stock_id=stock_id
+    )
 
 
     connection.commit()
@@ -1661,11 +2300,60 @@ def delete_stock(stock_id):
 
 
     cursor.execute("""
-        DELETE FROM stock
+        SELECT
+            item_name,
+            brand,
+            stock_quantity,
+            price
+
+        FROM stock
+
+        WHERE id = ?
+          AND is_deleted = 0
+    """, (
+        stock_id,
+    ))
+
+
+    stock_item = cursor.fetchone()
+
+
+    if not stock_item:
+
+        connection.close()
+
+        return redirect(
+            url_for("stock")
+        )
+
+
+    # Soft delete the item instead of permanently
+    # deleting it. This allows History to restore it.
+
+    cursor.execute("""
+        UPDATE stock
+
+        SET is_deleted = 1
+
         WHERE id = ?
     """, (
         stock_id,
     ))
+
+
+    add_history(
+        connection,
+        session["username"],
+        session["role"].title(),
+        "Stock",
+        (
+            f'Deleted stock item '
+            f'"{stock_item["item_name"]}" '
+            f'({stock_item["brand"]}).'
+        ),
+        action_type="restore_stock",
+        stock_id=stock_id
+    )
 
 
     connection.commit()
@@ -1676,6 +2364,510 @@ def delete_stock(stock_id):
         url_for("stock")
     )
 
+
+# =========================================================
+# HISTORY PAGE
+# =========================================================
+
+@app.route("/history")
+def history():
+
+    if not user_logged_in():
+
+        return redirect(
+            url_for("staff_login_page")
+        )
+
+
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    category = request.args.get(
+        "category",
+        ""
+    ).strip()
+
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+
+    query = """
+        SELECT *
+        FROM history
+
+        WHERE 1 = 1
+    """
+
+
+    values = []
+
+
+    if search:
+
+        query += """
+            AND (
+                user LIKE ?
+                OR role LIKE ?
+                OR category LIKE ?
+                OR activity LIKE ?
+            )
+        """
+
+        search_value = f"%{search}%"
+
+        values.extend([
+            search_value,
+            search_value,
+            search_value,
+            search_value
+        ])
+
+
+    if category:
+
+        query += """
+            AND category = ?
+        """
+
+        values.append(category)
+
+
+    query += """
+        ORDER BY id DESC
+    """
+
+
+    cursor.execute(
+        query,
+        values
+    )
+
+
+    history_rows = cursor.fetchall()
+
+
+    history_records = []
+
+
+    for record in history_rows:
+
+        # Once Restore/Revert has been used,
+        # no button should appear again.
+
+        action_type = record["action_type"]
+
+        if record["is_used"] == 1:
+
+            action_type = None
+
+
+        history_records.append({
+
+            "id": record["id"],
+
+            "date_time": record["date_time"],
+
+            "user": record["user"],
+
+            "role": record["role"],
+
+            "category": record["category"],
+
+            "activity": record["activity"],
+
+            "action_type": action_type
+
+        })
+
+
+    connection.close()
+
+
+    return render_template(
+        "history.html",
+        history_records=history_records,
+        search=search,
+        category=category
+    )
+
+
+# =========================================================
+# RESTORE DELETED STOCK
+# =========================================================
+
+@app.route(
+    "/history/restore-stock/<int:history_id>",
+    methods=["POST"]
+)
+def restore_history_item(history_id):
+
+    if not user_logged_in():
+
+        return redirect(
+            url_for("staff_login_page")
+        )
+
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+
+    cursor.execute("""
+        SELECT *
+        FROM history
+
+        WHERE id = ?
+          AND action_type = 'restore_stock'
+          AND is_used = 0
+    """, (
+        history_id,
+    ))
+
+
+    history_record = cursor.fetchone()
+
+
+    if not history_record:
+
+        connection.close()
+
+        return redirect(
+            url_for("history")
+        )
+
+
+    stock_id = history_record["stock_id"]
+
+
+    cursor.execute("""
+        SELECT
+            item_name,
+            brand
+
+        FROM stock
+
+        WHERE id = ?
+    """, (
+        stock_id,
+    ))
+
+
+    stock_item = cursor.fetchone()
+
+
+    if stock_item:
+
+        cursor.execute("""
+            UPDATE stock
+
+            SET is_deleted = 0
+
+            WHERE id = ?
+        """, (
+            stock_id,
+        ))
+
+
+        cursor.execute("""
+            UPDATE history
+
+            SET is_used = 1
+
+            WHERE id = ?
+        """, (
+            history_id,
+        ))
+
+
+        add_history(
+            connection,
+            session["username"],
+            session["role"].title(),
+            "Stock",
+            (
+                f'Restored stock item '
+                f'"{stock_item["item_name"]}" '
+                f'({stock_item["brand"]}).'
+            ),
+            stock_id=stock_id
+        )
+
+
+    connection.commit()
+    connection.close()
+
+
+    return redirect(
+        url_for("history")
+    )
+
+
+# =========================================================
+# REVERT ORDER STATUS
+# =========================================================
+
+@app.route(
+    "/history/revert-order/<int:history_id>",
+    methods=["POST"]
+)
+def revert_history_order(history_id):
+
+    if not user_logged_in():
+
+        return redirect(
+            url_for("staff_login_page")
+        )
+
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+
+    cursor.execute("""
+        SELECT *
+        FROM history
+
+        WHERE id = ?
+          AND action_type = 'revert_order'
+          AND is_used = 0
+    """, (
+        history_id,
+    ))
+
+
+    history_record = cursor.fetchone()
+
+
+    if not history_record:
+
+        connection.close()
+
+        return redirect(
+            url_for("history")
+        )
+
+
+    order_id = history_record["order_id"]
+
+    previous_status = (
+        history_record["previous_status"]
+    )
+
+
+    if order_id and previous_status:
+
+        cursor.execute("""
+            UPDATE orders
+
+            SET order_status = ?
+
+            WHERE id = ?
+        """, (
+            previous_status,
+            order_id
+        ))
+
+
+        cursor.execute("""
+            UPDATE history
+
+            SET is_used = 1
+
+            WHERE id = ?
+        """, (
+            history_id,
+        ))
+
+
+        add_history(
+            connection,
+            session["username"],
+            session["role"].title(),
+            "Orders",
+            (
+                f'Reverted Order #{order_id} '
+                f'to "{previous_status}".'
+            ),
+            order_id=order_id
+        )
+
+
+    connection.commit()
+    connection.close()
+
+
+    return redirect(
+        url_for("history")
+    )
+
+# =========================================================
+# SETTINGS PAGE - MANAGER ONLY
+# =========================================================
+
+@app.route("/settings")
+def settings():
+
+    # User must be logged in.
+
+    if not user_logged_in():
+
+        return redirect(
+            url_for("staff_login_page")
+        )
+
+
+    # Only managers can access Settings.
+
+    if session.get("role") != "manager":
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+
+    current_settings = get_settings()
+
+
+    return render_template(
+        "settings.html",
+        settings=current_settings,
+        username=session["username"],
+        role=session["role"]
+    )
+
+
+# =========================================================
+# UPDATE SETTINGS - MANAGER ONLY
+# =========================================================
+
+@app.route(
+    "/settings/update",
+    methods=["POST"]
+)
+def update_settings():
+
+    # User must be logged in.
+
+    if not user_logged_in():
+
+        return redirect(
+            url_for("staff_login_page")
+        )
+
+
+    # Only managers can change settings.
+
+    if session.get("role") != "manager":
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+
+    business_name = request.form.get(
+        "business_name",
+        ""
+    ).strip()
+
+
+    store_phone = request.form.get(
+        "store_phone",
+        ""
+    ).strip()
+
+
+    store_email = request.form.get(
+        "store_email",
+        ""
+    ).strip()
+
+
+    pickup_address = request.form.get(
+        "pickup_address",
+        ""
+    ).strip()
+
+
+    weekday_hours = request.form.get(
+        "weekday_hours",
+        ""
+    ).strip()
+
+
+    saturday_hours = request.form.get(
+        "saturday_hours",
+        ""
+    ).strip()
+
+
+    sunday_hours = request.form.get(
+        "sunday_hours",
+        ""
+    ).strip()
+
+
+    
+
+    # Business name cannot be empty.
+
+    if not business_name:
+
+        business_name = "BulkOrder Pro"
+
+
+
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+
+    cursor.execute("""
+        UPDATE settings
+
+        SET
+            business_name = ?,
+            store_phone = ?,
+            store_email = ?,
+            pickup_address = ?,
+            weekday_hours = ?,
+            saturday_hours = ?,
+            sunday_hours = ?
+            
+
+        WHERE id = 1
+    """, (
+        business_name,
+        store_phone,
+        store_email,
+        pickup_address,
+        weekday_hours,
+        saturday_hours,
+        sunday_hours
+        
+    ))
+
+
+    # Add the change to History.
+
+    add_history(
+        connection,
+        session["username"],
+        session["role"].title(),
+        "Settings",
+        "Updated business settings."
+    )
+
+
+    connection.commit()
+    connection.close()
+
+
+    return redirect(
+        url_for("settings")
+    )
 
 # =========================================================
 # STAFF / MANAGER LOGOUT

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BulkOrder Pro History</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='history.css') }}">
+</head>
+
+<body>
+
+    <div class="top-bar">
+
+        <div class="circles">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="web-address">
+            bulkorderpro.app
+        </div>
+
+    </div>
+
+
+    <div class="history-container">
+
+        <div class="sidebar">
+
+            <h2>
+                BulkOrder
+                <span>Pro</span>
+            </h2>
+
+            <a href="{{ url_for('dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('orders') }}">
+                Orders
+            </a>
+
+            <a href="{{ url_for('customers') }}">
+                Customers
+            </a>
+
+            <a href="{{ url_for('stock') }}">
+                Stock
+            </a>
+
+            <a href="{{ url_for('history') }}"
+               class="active">
+                History
+            </a>
+
+            {% if session.get("role") == "manager" %}
+            <a href="{{ url_for('settings') }}">
+                Settings
+            </a>
+
+{% endif %}
+
+            <div class="bottom-links">
+
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <main class="main-content">
+
+            <div class="history-header">
+
+                <h1>Activity History</h1>
+
+                <p>
+                    View recent actions made within BulkOrder Pro.
+                </p>
+
+            </div>
+
+
+            <!-- SEARCH AND FILTERS -->
+
+            <form
+                class="history-filter"
+                method="GET"
+                action="{{ url_for('history') }}">
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ search }}"
+                    placeholder="Search activity...">
+
+                <select name="category">
+
+                    <option value="">
+                        All Activities
+                    </option>
+
+                    <option value="Stock"
+                        {% if category == "Stock" %}selected{% endif %}>
+                        Stock
+                    </option>
+
+                    <option value="Orders"
+                        {% if category == "Orders" %}selected{% endif %}>
+                        Orders
+                    </option>
+
+                    <option value="Customers"
+                        {% if category == "Customers" %}selected{% endif %}>
+                        Customers
+                    </option>
+
+                    <option value="Login"
+                        {% if category == "Login" %}selected{% endif %}>
+                        Login
+                    </option>
+
+                </select>
+
+                <button type="submit">
+                    Search
+                </button>
+
+                {% if search or category %}
+
+                <a href="{{ url_for('history') }}"
+                   class="clear-button">
+                    Clear
+                </a>
+
+                {% endif %}
+
+            </form>
+
+
+            <!-- HISTORY TABLE -->
+
+            <div class="history-table-box">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Category</th>
+                            <th>Activity</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for record in history_records %}
+
+                        <tr>
+
+                            <td>
+                                {{ record["date_time"] }}
+                            </td>
+
+                            <td>
+                                {{ record["user"] }}
+                            </td>
+
+                            <td>
+                                {{ record["role"] }}
+                            </td>
+
+                            <td>
+                                {{ record["category"] }}
+                            </td>
+
+                            <td>
+                                {{ record["activity"] }}
+                            </td>
+
+                            <td>
+
+                                {% if record["action_type"] == "restore_stock" %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('restore_history_item', history_id=record['id']) }}">
+
+                                    <button
+                                        type="submit"
+                                        class="restore-button">
+
+                                        Restore
+
+                                    </button>
+
+                                </form>
+
+
+                                {% elif record["action_type"] == "revert_order" %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('revert_history_order', history_id=record['id']) }}">
+
+                                    <button
+                                        type="submit"
+                                        class="revert-button">
+
+                                        Revert
+
+                                    </button>
+
+                                </form>
+
+
+                                {% else %}
+
+                                <span class="no-action">
+                                    —
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="6"
+                                class="empty-message">
+
+                                No history records found.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

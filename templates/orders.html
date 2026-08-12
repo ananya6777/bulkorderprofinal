@@ -55,9 +55,16 @@
 
             
 
-            <a href="#">
+            <a href="{{ url_for('history') }}">
                 History
             </a>
+
+            {% if session.get("role") == "manager" %}
+            <a href="{{ url_for('settings') }}">
+                Settings
+            </a>
+
+{% endif %}
 
             <div class="bottom-links">
 

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BulkOrder Pro Settings</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='settings.css') }}">
+</head>
+
+<body>
+
+    <div class="top-bar">
+
+        <div class="circles">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="web-address">
+            bulkorderpro.app
+        </div>
+
+    </div>
+
+
+    <div class="settings-container">
+
+        <!-- SIDEBAR -->
+
+        <div class="sidebar">
+
+            <h2>
+                BulkOrder
+                <span>Pro</span>
+            </h2>
+
+            <a href="{{ url_for('dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('orders') }}">
+                Orders
+            </a>
+
+            <a href="{{ url_for('customers') }}">
+                Customers
+            </a>
+
+            <a href="{{ url_for('stock') }}">
+                Stock
+            </a>
+
+            <a href="{{ url_for('history') }}">
+                History
+            </a>
+
+            <a href="{{ url_for('settings') }}"
+               class="active">
+                Settings
+            </a>
+
+            <div class="bottom-links">
+
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+            <div class="settings-header">
+
+                <h1>Settings</h1>
+
+                <p>
+                    Manage store information and pickup hours.
+                </p>
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('update_settings') }}">
+
+                <!-- STORE INFORMATION -->
+
+                <section class="settings-section">
+
+                    <div class="section-title">
+
+                        <h2>Store Information</h2>
+
+                        <p>
+                            Details used by BulkOrder Pro.
+                        </p>
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="business_name">
+                                Business Name
+                            </label>
+
+                            <input
+                                id="business_name"
+                                type="text"
+                                name="business_name"
+                                value="{{ settings['business_name'] }}"
+                                required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="store_phone">
+                                Store Phone
+                            </label>
+
+                            <input
+                                id="store_phone"
+                                type="text"
+                                name="store_phone"
+                                value="{{ settings['store_phone'] }}">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="store_email">
+                                Store Email
+                            </label>
+
+                            <input
+                                id="store_email"
+                                type="email"
+                                name="store_email"
+                                value="{{ settings['store_email'] }}">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="pickup_address">
+                                Pickup Address
+                            </label>
+
+                            <input
+                                id="pickup_address"
+                                type="text"
+                                name="pickup_address"
+                                value="{{ settings['pickup_address'] }}">
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- PICKUP HOURS -->
+
+                <section class="settings-section">
+
+                    <div class="section-title">
+
+                        <h2>Pickup Hours</h2>
+
+                        <p>
+                            Set the times customers can collect orders.
+                        </p>
+
+                    </div>
+
+
+                    <div class="pickup-grid">
+
+                        <div class="pickup-row">
+
+                            <label for="weekday_hours">
+                                Monday - Friday
+                            </label>
+
+                            <input
+                                id="weekday_hours"
+                                type="text"
+                                name="weekday_hours"
+                                value="{{ settings['weekday_hours'] }}"
+                                placeholder="9:00 AM - 6:00 PM">
+
+                        </div>
+
+
+                        <div class="pickup-row">
+
+                            <label for="saturday_hours">
+                                Saturday
+                            </label>
+
+                            <input
+                                id="saturday_hours"
+                                type="text"
+                                name="saturday_hours"
+                                value="{{ settings['saturday_hours'] }}"
+                                placeholder="9:00 AM - 3:00 PM">
+
+                        </div>
+
+
+                        <div class="pickup-row">
+
+                            <label for="sunday_hours">
+                                Sunday
+                            </label>
+
+                            <input
+                                id="sunday_hours"
+                                type="text"
+                                name="sunday_hours"
+                                value="{{ settings['sunday_hours'] }}"
+                                placeholder="Closed">
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ACCOUNT -->
+
+                <section class="settings-section">
+
+                    <div class="section-title">
+
+                        <h2>Account</h2>
+
+                        <p>
+                            Current manager account.
+                        </p>
+
+                    </div>
+
+
+                    <div class="account-box">
+
+                        <div>
+
+                            <span>
+                                Username
+                            </span>
+
+                            <strong>
+                                {{ username }}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Role
+                            </span>
+
+                            <strong>
+                                {{ role|title }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- BUTTONS -->
+
+                <div class="settings-buttons">
+
+                    <button
+                        type="submit"
+                        class="save-button">
+
+                        Save Changes
+
+                    </button>
+
+                    <a
+                        href="{{ url_for('dashboard') }}"
+                        class="cancel-button">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,311 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    background: #f7f0e5;
+    color: #4b2b16;
+
+    font-family: Georgia, serif;
+}
+
+
+/* TOP BAR */
+
+.top-bar {
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 18px;
+
+    background: #c94f00;
+    border-bottom: 4px solid #5a2c14;
+}
+
+.circles {
+    display: flex;
+    gap: 8px;
+}
+
+.circles span {
+    width: 12px;
+    height: 12px;
+
+    border: 2px solid #ffd15c;
+    border-radius: 50%;
+}
+
+.web-address {
+    width: 250px;
+
+    margin-left: 30px;
+    padding: 4px;
+
+    color: white;
+    text-align: center;
+
+    border: 2px solid #f2ad32;
+    border-radius: 4px;
+}
+
+
+/* LAYOUT */
+
+.history-container {
+    display: flex;
+
+    min-height: calc(100vh - 54px);
+}
+
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 190px;
+
+    padding: 20px 10px;
+
+    background: #176b3a;
+    color: #e7dcaa;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+
+    color: #f2c440;
+    text-align: center;
+}
+
+.sidebar h2 span {
+    display: block;
+}
+
+.sidebar a {
+    display: block;
+
+    margin-bottom: 4px;
+    padding: 10px 12px;
+
+    color: #ddd49d;
+
+    text-decoration: none;
+
+    border-radius: 5px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: #668f38;
+    color: #ffd95b;
+}
+
+.bottom-links {
+    margin-top: 30px;
+    padding-top: 12px;
+
+    border-top: 1px solid #3c8055;
+}
+
+
+/* MAIN CONTENT */
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+
+    padding: 20px;
+}
+
+
+/* HEADER */
+
+.history-header {
+    margin-bottom: 18px;
+}
+
+.history-header h1 {
+    margin: 0 0 5px;
+
+    font-size: 30px;
+}
+
+.history-header p {
+    margin: 0;
+
+    color: #846852;
+}
+
+
+/* FILTER */
+
+.history-filter {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+    padding: 14px;
+
+    background: #fff1d9;
+
+    border: 1px solid #c8aa7e;
+    border-radius: 7px;
+}
+
+.history-filter input,
+.history-filter select {
+    padding: 9px;
+
+    border: 2px solid #d86616;
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+}
+
+.history-filter input {
+    min-width: 260px;
+}
+
+.history-filter button {
+    padding: 9px 15px;
+
+    background: #176b3a;
+    color: white;
+
+    border: none;
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+
+    cursor: pointer;
+}
+
+.history-filter button:hover {
+    background: #12552f;
+}
+
+.clear-button {
+    padding: 9px 15px;
+
+    background: #846852;
+    color: white;
+
+    border-radius: 6px;
+
+    text-decoration: none;
+}
+
+
+/* TABLE */
+
+.history-table-box {
+    overflow-x: auto;
+
+    background: white;
+
+    border: 3px solid #4b2b16;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f8dfb3;
+}
+
+th,
+td {
+    padding: 12px 13px;
+
+    text-align: left;
+    vertical-align: middle;
+
+    border-bottom: 1px solid #eadbc8;
+}
+
+tbody tr:hover {
+    background: #fffaf0;
+}
+
+
+/* ACTION BUTTONS */
+
+.restore-button {
+    padding: 6px 10px;
+
+    background: #176b3a;
+    color: white;
+
+    border: none;
+    border-radius: 5px;
+
+    font-family: Georgia, serif;
+
+    cursor: pointer;
+}
+
+.restore-button:hover {
+    background: #12552f;
+}
+
+.revert-button {
+    padding: 6px 10px;
+
+    background: #d9a126;
+    color: #4b2b16;
+
+    border: none;
+    border-radius: 5px;
+
+    font-family: Georgia, serif;
+
+    cursor: pointer;
+}
+
+.revert-button:hover {
+    background: #c28d1c;
+}
+
+.no-action {
+    color: #999;
+}
+
+.empty-message {
+    padding: 25px;
+    text-align: center;
+    color: #846852;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+
+    .history-container {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .history-filter {
+        flex-direction: column;
+    }
+
+    .history-filter input {
+        min-width: 0;
+        width: 100%;
+    }
+
+}

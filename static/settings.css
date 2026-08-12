@@ -1,0 +1,305 @@
+/* ---------- PAGE ---------- */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#f7f0e5;
+    font-family:Georgia, serif;
+    color:#4b2b16;
+}
+
+
+/* ---------- TOP BAR ---------- */
+
+.top-bar{
+    height:50px;
+    background:#c94f00;
+    border-bottom:4px solid #5a2c14;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 18px;
+}
+
+.circles{
+    display:flex;
+    gap:8px;
+}
+
+.circles span{
+    width:12px;
+    height:12px;
+    border:2px solid #ffd15c;
+    border-radius:50%;
+}
+
+.web-address{
+    width:250px;
+    margin-left:30px;
+    padding:4px;
+
+    text-align:center;
+    color:white;
+
+    border:2px solid #f2ad32;
+    border-radius:4px;
+}
+
+
+/* ---------- LAYOUT ---------- */
+
+.settings-container{
+    display:flex;
+    min-height:calc(100vh - 50px);
+}
+
+
+/* ---------- SIDEBAR ---------- */
+
+.sidebar{
+    width:190px;
+    background:#176b3a;
+    color:#e7dcaa;
+
+    padding:20px 10px;
+}
+
+.sidebar h2{
+    color:#f2c440;
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.sidebar h2 span{
+    display:block;
+}
+
+.sidebar a{
+    display:block;
+
+    padding:10px 12px;
+    margin-bottom:4px;
+
+    color:#ddd49d;
+    text-decoration:none;
+
+    border-radius:6px;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:#668f38;
+    color:#ffd95b;
+}
+
+.bottom-links{
+    margin-top:30px;
+    border-top:1px solid #3c8055;
+    padding-top:12px;
+}
+
+
+/* ---------- MAIN ---------- */
+
+.main-content{
+    flex:1;
+    padding:30px;
+}
+
+.settings-header h1{
+    font-size:34px;
+    margin-bottom:6px;
+}
+
+.settings-header p{
+    color:#77553d;
+    margin-bottom:30px;
+}
+
+
+/* ---------- SECTIONS ---------- */
+
+.settings-section{
+    background:white;
+
+    border:2px solid #d7c2a4;
+    border-radius:10px;
+
+    padding:24px;
+    margin-bottom:25px;
+}
+
+.section-title{
+    margin-bottom:20px;
+}
+
+.section-title h2{
+    color:#c94f00;
+    margin-bottom:5px;
+}
+
+.section-title p{
+    color:#85624c;
+}
+
+
+/* ---------- FORMS ---------- */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group label,
+.pickup-row label{
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+.form-group input,
+.pickup-row input{
+    padding:12px;
+
+    border:2px solid #d9b98d;
+    border-radius:8px;
+
+    font-family:Georgia, serif;
+    font-size:15px;
+}
+
+.form-group input:focus,
+.pickup-row input:focus{
+    outline:none;
+    border-color:#176b3a;
+}
+
+
+/* ---------- PICKUP HOURS ---------- */
+
+.pickup-grid{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.pickup-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:25px;
+}
+
+.pickup-row label{
+    width:170px;
+}
+
+.pickup-row input{
+    flex:1;
+}
+
+
+/* ---------- ACCOUNT ---------- */
+
+.account-box{
+    display:flex;
+    justify-content:space-between;
+
+    background:#fff6e5;
+
+    border:2px solid #ead1a6;
+    border-radius:8px;
+
+    padding:18px;
+}
+
+.account-box span{
+    display:block;
+    color:#8b684e;
+    margin-bottom:5px;
+}
+
+.account-box strong{
+    font-size:17px;
+}
+
+
+/* ---------- BUTTONS ---------- */
+
+.settings-buttons{
+    display:flex;
+    gap:15px;
+    margin-top:10px;
+}
+
+.save-button{
+    background:#c94f00;
+    color:white;
+
+    border:none;
+    border-radius:8px;
+
+    padding:12px 24px;
+
+    cursor:pointer;
+
+    font-size:15px;
+    font-family:Georgia, serif;
+}
+
+.save-button:hover{
+    background:#a93d00;
+}
+
+.cancel-button{
+    background:white;
+    color:#4b2b16;
+
+    border:2px solid #8b684e;
+    border-radius:8px;
+
+    padding:10px 24px;
+
+    text-decoration:none;
+
+    display:flex;
+    align-items:center;
+}
+
+.cancel-button:hover{
+    background:#f4e6cf;
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:900px){
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .pickup-row{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .pickup-row label{
+        width:auto;
+    }
+
+    .account-box{
+        flex-direction:column;
+        gap:20px;
+    }
+}
