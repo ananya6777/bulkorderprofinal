@@ -35,36 +35,184 @@
                 method="POST"
                 action="{{ url_for('customer_register') }}">
 
-                <label>Full Name</label>
+                <!-- FIRST NAME -->
+
+                <label for="customer_name">
+                    First Name *
+                </label>
 
                 <input
+                    id="customer_name"
                     type="text"
                     name="customer_name"
+                    placeholder="Ananya"
                     required>
 
 
-                <label>Phone Number</label>
+                <!-- LAST NAME / INITIAL -->
+
+                <label for="last_name">
+                    Last Name / Initial *
+                </label>
 
                 <input
+                    id="last_name"
+                    type="text"
+                    name="last_name"
+                    placeholder="D or Doe"
+                    required>
+
+
+                <!-- PHONE -->
+
+                <label for="phone">
+                    Mobile Number *
+                </label>
+
+                <input
+                    id="phone"
                     type="tel"
                     name="phone"
+                    placeholder="0412 345 678"
+                    maxlength="12"
                     required>
 
 
-                <label>Username</label>
+                <!-- USERNAME -->
+
+                <label for="username">
+                    Username *
+                </label>
 
                 <input
+                    id="username"
                     type="text"
                     name="username"
+                    minlength="5"
+                    placeholder="Minimum 5 characters"
                     required>
 
 
-                <label>Password</label>
+                <!-- PASSWORD -->
 
-                <input
-                    type="password"
-                    name="password"
-                    required>
+                <label for="password">
+                    Password *
+                </label>
+
+                <div class="password-box">
+
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        minlength="8"
+                        required>
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('password')">
+
+                        Show
+
+                    </button>
+
+                </div>
+
+
+                <!-- PASSWORD REQUIREMENTS -->
+
+                <div class="password-requirements">
+
+                    <p>
+                        Password must contain:
+                    </p>
+
+                    <span
+                        id="length-check"
+                        class="requirement-invalid">
+
+                        ✗ At least 8 characters
+
+                    </span>
+
+                    <span
+                        id="upper-check"
+                        class="requirement-invalid">
+
+                        ✗ One uppercase letter
+
+                    </span>
+
+                    <span
+                        id="lower-check"
+                        class="requirement-invalid">
+
+                        ✗ One lowercase letter
+
+                    </span>
+
+                    <span
+                        id="number-check"
+                        class="requirement-invalid">
+
+                        ✗ One number
+
+                    </span>
+
+                    <span
+                        id="special-check"
+                        class="requirement-invalid">
+
+                        ✗ One special character
+
+                    </span>
+
+                </div>
+
+
+                <!-- PASSWORD STRENGTH -->
+
+                <div class="strength-container">
+
+                    <div class="strength-bar">
+
+                        <div id="strength-fill"></div>
+
+                    </div>
+
+                    <span id="strength-text">
+                        Password strength
+                    </span>
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <label for="confirm_password">
+                    Confirm Password *
+                </label>
+
+                <div class="password-box">
+
+                    <input
+                        id="confirm_password"
+                        type="password"
+                        name="confirm_password"
+                        minlength="8"
+                        required>
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('confirm_password')">
+
+                        Show
+
+                    </button>
+
+                </div>
 
 
                 <button type="submit">
@@ -73,17 +221,277 @@
 
             </form>
 
+
             <p class="account-link">
+
                 Already have an account?
 
                 <a href="{{ url_for('customer_login_page') }}">
                     Login
                 </a>
+
             </p>
 
         </div>
 
     </div>
+
+
+    <script>
+
+        // ==========================================
+        // PHONE NUMBER FORMATTING
+        // ==========================================
+
+        const phoneInput =
+            document.getElementById("phone");
+
+
+        phoneInput.addEventListener(
+            "input",
+            function () {
+
+                let numbers =
+                    this.value.replace(/\D/g, "");
+
+
+                numbers =
+                    numbers.substring(0, 10);
+
+
+                if (numbers.length > 7) {
+
+                    this.value =
+                        numbers.substring(0, 4)
+                        + " "
+                        + numbers.substring(4, 7)
+                        + " "
+                        + numbers.substring(7, 10);
+
+                }
+
+                else if (numbers.length > 4) {
+
+                    this.value =
+                        numbers.substring(0, 4)
+                        + " "
+                        + numbers.substring(4);
+
+                }
+
+                else {
+
+                    this.value = numbers;
+
+                }
+
+            }
+        );
+
+
+        // ==========================================
+        // SHOW / HIDE PASSWORD
+        // ==========================================
+
+        function togglePassword(inputId) {
+
+            const input =
+                document.getElementById(inputId);
+
+
+            if (input.type === "password") {
+
+                input.type = "text";
+
+            }
+
+            else {
+
+                input.type = "password";
+
+            }
+
+        }
+
+
+        // ==========================================
+        // PASSWORD STRENGTH
+        // ==========================================
+
+        const passwordInput =
+            document.getElementById("password");
+
+
+        passwordInput.addEventListener(
+            "input",
+            function () {
+
+                const password =
+                    this.value;
+
+
+                let score = 0;
+
+
+                const lengthValid =
+                    password.length >= 8;
+
+                const upperValid =
+                    /[A-Z]/.test(password);
+
+                const lowerValid =
+                    /[a-z]/.test(password);
+
+                const numberValid =
+                    /\d/.test(password);
+
+                const specialValid =
+                    /[^A-Za-z0-9]/.test(password);
+
+
+                updateRequirement(
+                    "length-check",
+                    lengthValid,
+                    "At least 8 characters"
+                );
+
+
+                updateRequirement(
+                    "upper-check",
+                    upperValid,
+                    "One uppercase letter"
+                );
+
+
+                updateRequirement(
+                    "lower-check",
+                    lowerValid,
+                    "One lowercase letter"
+                );
+
+
+                updateRequirement(
+                    "number-check",
+                    numberValid,
+                    "One number"
+                );
+
+
+                updateRequirement(
+                    "special-check",
+                    specialValid,
+                    "One special character"
+                );
+
+
+                if (lengthValid) {
+                    score++;
+                }
+
+                if (upperValid) {
+                    score++;
+                }
+
+                if (lowerValid) {
+                    score++;
+                }
+
+                if (numberValid) {
+                    score++;
+                }
+
+                if (specialValid) {
+                    score++;
+                }
+
+
+                const strengthFill =
+                    document.getElementById(
+                        "strength-fill"
+                    );
+
+
+                const strengthText =
+                    document.getElementById(
+                        "strength-text"
+                    );
+
+
+                strengthFill.style.width =
+                    (score * 20) + "%";
+
+
+                if (score <= 2) {
+
+                    strengthText.textContent =
+                        "Weak";
+
+                    strengthFill.className =
+                        "weak";
+
+                }
+
+                else if (score <= 4) {
+
+                    strengthText.textContent =
+                        "Medium";
+
+                    strengthFill.className =
+                        "medium";
+
+                }
+
+                else {
+
+                    strengthText.textContent =
+                        "Strong";
+
+                    strengthFill.className =
+                        "strong";
+
+                }
+
+            }
+        );
+
+
+        // ==========================================
+        // PASSWORD REQUIREMENT TEXT
+        // ==========================================
+
+        function updateRequirement(
+            id,
+            valid,
+            text
+        ) {
+
+            const element =
+                document.getElementById(id);
+
+
+            if (valid) {
+
+                element.textContent =
+                    "✓ " + text;
+
+                element.className =
+                    "requirement-valid";
+
+            }
+
+            else {
+
+                element.textContent =
+                    "✗ " + text;
+
+                element.className =
+                    "requirement-invalid";
+
+            }
+
+        }
+
+    </script>
 
 </body>
 

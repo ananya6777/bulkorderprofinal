@@ -4,105 +4,329 @@
 
 body {
     margin: 0;
-    font-family: Georgia, serif;
-    background: #f7f0e5;
+
+    min-height: 100vh;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+
+    background: #f7f0e5;
+    color: #4b2b16;
+
+    font-family: Georgia, serif;
 }
+
+
+/* ACCOUNT PAGE */
 
 .account-page {
     width: 100%;
+
     display: flex;
     justify-content: center;
-    padding: 40px;
+
+    padding: 40px 20px;
 }
 
+
+/* ACCOUNT CARD */
+
 .account-card {
-    width: 420px;
+    width: 460px;
+
+    padding: 35px;
+
     background: white;
+
     border: 3px solid #5a2c14;
     border-radius: 10px;
-    padding: 35px;
-    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
+
+
+/* HEADINGS */
 
 .account-card h1 {
     margin: 0;
+
     color: #176b3a;
+
     text-align: center;
 }
 
 .account-card h2 {
     margin-top: 12px;
-    text-align: center;
+
     color: #c94f00;
+
+    text-align: center;
 }
 
-.account-card p {
-    text-align: center;
-    color: #666;
+.account-card > p {
     margin-bottom: 25px;
+
+    color: #666;
+
+    text-align: center;
 }
+
+
+/* LABELS */
 
 label {
     display: block;
+
     margin-top: 15px;
     margin-bottom: 6px;
+
     font-weight: bold;
 }
 
+
+/* INPUTS */
+
 input {
     width: 100%;
+
     padding: 12px;
+
+    background: #fffaf2;
+    color: #4b2b16;
+
     border: 2px solid #d7c5a2;
     border-radius: 6px;
+
+    font-family: Georgia, serif;
     font-size: 15px;
 }
 
 input:focus {
     outline: none;
+
     border-color: #176b3a;
 }
 
-button {
-    width: 100%;
-    margin-top: 25px;
-    padding: 14px;
-    background: #176b3a;
-    color: white;
-    border: none;
+input::placeholder {
+    color: #a18d7d;
+}
+
+
+/* PASSWORD BOX */
+
+.password-box {
+    display: flex;
+    align-items: stretch;
+
+    gap: 8px;
+}
+
+.password-box input {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+/* SHOW / HIDE PASSWORD BUTTON */
+
+.show-password {
+    width: auto;
+
+    margin-top: 0;
+    padding: 0 14px;
+
+    background: #fff2d8;
+    color: #4b2b16;
+
+    border: 2px solid #c8aa7e;
     border-radius: 6px;
-    font-size: 16px;
+
+    font-family: Georgia, serif;
+    font-size: 13px;
+
     cursor: pointer;
 }
 
-button:hover {
+.show-password:hover {
+    background: #f8dfb3;
+}
+
+
+/* PASSWORD REQUIREMENTS */
+
+.password-requirements {
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    padding: 12px;
+
+    background: #fff8ec;
+
+    border: 1px solid #d7c5a2;
+    border-radius: 6px;
+}
+
+.password-requirements p {
+    margin: 0 0 8px;
+
+    color: #4b2b16;
+
+    text-align: left;
+
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.password-requirements span {
+    display: block;
+
+    margin: 4px 0;
+
+    font-size: 13px;
+}
+
+.requirement-valid {
+    color: #176b3a;
+}
+
+.requirement-invalid {
+    color: #b23f35;
+}
+
+
+/* PASSWORD STRENGTH */
+
+.strength-container {
+    margin-top: 8px;
+    margin-bottom: 15px;
+}
+
+.strength-bar {
+    width: 100%;
+    height: 8px;
+
+    overflow: hidden;
+
+    background: #eadbc8;
+
+    border-radius: 10px;
+}
+
+#strength-fill {
+    width: 0;
+    height: 100%;
+
+    transition: width 0.2s;
+}
+
+#strength-fill.weak {
+    background: #c1483e;
+}
+
+#strength-fill.medium {
+    background: #d9a126;
+}
+
+#strength-fill.strong {
+    background: #176b3a;
+}
+
+#strength-text {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #846852;
+
+    font-size: 13px;
+}
+
+
+/* MAIN SUBMIT BUTTON */
+
+form > button[type="submit"] {
+    width: 100%;
+
+    margin-top: 25px;
+    padding: 14px;
+
+    background: #176b3a;
+    color: white;
+
+    border: none;
+    border-radius: 6px;
+
+    font-family: Georgia, serif;
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+form > button[type="submit"]:hover {
     background: #14552f;
 }
 
+
+/* ACCOUNT LINK */
+
 .account-link {
     margin-top: 20px;
+
     text-align: center;
 }
 
 .account-link a {
     color: #c94f00;
-    text-decoration: none;
+
     font-weight: bold;
+
+    text-decoration: none;
 }
 
 .account-link a:hover {
     text-decoration: underline;
 }
 
+
+/* ERROR MESSAGE */
+
 .error-message {
+    margin-bottom: 15px;
+    padding: 10px;
+
     background: #ffe0e0;
     color: #b22222;
+
     border: 1px solid #b22222;
-    padding: 10px;
     border-radius: 5px;
-    margin-bottom: 15px;
+
     text-align: center;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 520px) {
+
+    .account-page {
+        padding: 20px 12px;
+    }
+
+    .account-card {
+        width: 100%;
+
+        padding: 24px 18px;
+    }
+
+    .password-box {
+        flex-direction: column;
+    }
+
+    .show-password {
+        width: 100%;
+
+        padding: 10px;
+    }
 }

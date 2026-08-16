@@ -240,6 +240,62 @@
                     placeholder="Brand"
                     required>
 
+                    <select
+    name="category"
+    required>
+
+    <option value="">
+        Select Category
+    </option>
+
+    <option>
+        Rice & Grains
+    </option>
+
+    <option>
+        Flour & Baking
+    </option>
+
+    <option>
+        Lentils & Pulses
+    </option>
+
+    <option>
+        Spices
+    </option>
+
+    <option>
+        Oils & Ghee
+    </option>
+
+    <option>
+        Snacks & Biscuits
+    </option>
+
+    <option>
+        Beverages
+    </option>
+
+    <option>
+        Frozen Foods
+    </option>
+
+    <option>
+        Sweets
+    </option>
+
+    <option>
+        Pickles & Sauces
+    </option>
+
+    <option>
+        Other
+    </option>
+
+</select>
+
+
+
                 <input
                     type="number"
                     name="stock_quantity"
@@ -274,6 +330,7 @@
                             <th>ID</th>
                             <th>Item</th>
                             <th>Brand</th>
+                            <th>Category</th>
                             <th>Current Stock</th>
                             <th>Status</th>
                             <th>Price</th>
@@ -299,6 +356,10 @@
 
                             <td>
                                 {{ item["brand"] }}
+                            </td>
+
+                            <td>
+                                {{ item["category"] }}
                             </td>
 
                             <td>
@@ -395,7 +456,7 @@
 
                         <tr>
 
-                            <td colspan="8"
+                            <td colspan="9"
                                 class="empty-message">
 
                                 No stock items match this filter.

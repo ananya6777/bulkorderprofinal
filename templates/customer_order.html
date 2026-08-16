@@ -67,6 +67,8 @@
                 action="{{ url_for('submit_customer_order') }}">
 
 
+                <!-- PICKUP DATE -->
+
                 <label for="pickup_date">
                     Pickup Date
                 </label>
@@ -75,7 +77,12 @@
                     id="pickup_date"
                     type="date"
                     name="pickup_date"
+                    min="{{ minimum_pickup_date }}"
                     required>
+
+                <p class="pickup-note">
+                    Pickup must be at least 3 days after your order is placed.
+                </p>
 
 
                 <h3>
@@ -135,6 +142,7 @@
                                 type="number"
                                 name="quantity_{{ item['id'] }}"
                                 min="0"
+                                max="{{ item['max_quantity'] }}"
                                 value="0">
 
                             {% else %}

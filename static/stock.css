@@ -558,3 +558,18 @@ tbody tr:hover {
     }
 
 }
+
+.add-stock-form select {
+    padding: 11px;
+    border: 2px solid #d7c5a2;
+    border-radius: 6px;
+    background: white;
+    color: #4b2b16;
+    font-family: Georgia, serif;
+    font-size: 14px;
+}
+
+.add-stock-form select:focus {
+    outline: none;
+    border-color: #176b3a;
+}
